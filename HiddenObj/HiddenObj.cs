@@ -66,12 +66,8 @@ namespace HiddenObj
 
         private static void onLoad(EventArgs args)
         {
-            Game.PrintChat("awdawdawawf");
+            Game.PrintChat("Hidden Objects 0.1 by DeTuKs");
             Drawing.OnDraw += onDraw;
-        }
-
-        private static void OnGameUpdate(EventArgs args)
-        {
         }
 
         private static void onDraw(EventArgs args)
