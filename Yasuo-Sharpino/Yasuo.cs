@@ -33,6 +33,10 @@ namespace Yasuo_Sharpino
         public static Spell E = new Spell(SpellSlot.E, 475);
         public static Spell R = new Spell(SpellSlot.R, 1200);
 
+
+        public static Vector3 point1 = new Vector3();
+        public static Vector3 point2 = new Vector3();
+
         public static void setSkillShots()
         {
             Q.SetSkillshot(0.25f, 50f, 1800f, false, Prediction.SkillshotType.SkillshotLine);
@@ -44,21 +48,95 @@ namespace Yasuo_Sharpino
         {
             if (target == null) return;
 
-            useQSmart(target);
+            
             if (!useESmart(target))
             {
                 List<Obj_AI_Hero> ign = new List<Obj_AI_Hero>();
                 ign.Add(target);
                 gapCloseE(target.Position.To2D(), ign);
             }
+            useQSmart(target);
         }
 
-       
+        public static void doLastHit(Obj_AI_Hero target)
+        {
+            if (!Orbwalking.CanAttack())
+                return;
+            var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + 50);
+            foreach ( var minion in minions.Where( minion => minion.IsValidTarget(Q.Range)))
+            {
+                if (Player.Distance(minion) < Orbwalking.GetRealAutoAttackRange(minion) && minion.Health < DamageLib.CalcPhysicalMinionDmg((double)(Player.BaseAttackDamage + Player.FlatPhysicalDamageMod), (Obj_AI_Minion)minion, true))
+                    return;
+                if (YasuoSharp.Config.Item("useElh").GetValue<bool>() && minion.Health < DamageLib.getDmg(minion, DamageLib.SpellType.E))
+                    useENormal(minion);
+
+                if (YasuoSharp.Config.Item("useQlh").GetValue<bool>() && !isQEmpovered() && minion.Health < DamageLib.getDmg(minion, DamageLib.SpellType.Q))
+                    if (!(target != null && isQEmpovered() && Player.Distance(target) < 1050))
+                        Q.CastIfWillHit(minion,1, false);
+            }
+        }
+
+        public static void doLaneClear(Obj_AI_Hero target)
+        {
+            
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + 50);
+
+            if (Q.IsReady() && !isDashing() && YasuoSharp.Config.Item("useQlc").GetValue<bool>())
+            {
+                if (isQEmpovered() && !(target != null && Player.Distance(target) < 1050))
+                {
+                    List<Vector2> minionPs = MinionManager.GetMinionsPredictedPositions(minions, 0.25f, 50f, 1200f, Player.ServerPosition, 900f, false, Prediction.SkillshotType.SkillshotLine);
+                    MinionManager.FarmLocation farm = QEmp.GetLineFarmLocation(minionPs); //MinionManager.GetBestLineFarmLocation(minionPs, 50f, 900f);
+                    //Console.WriteLine(farm.MinionsHit);
+                    if (farm.MinionsHit >= 3)
+                        QEmp.Cast(farm.Position, false);
+                }
+                else
+                {
+
+                    if (!Orbwalking.CanAttack())
+                        return;
+                    List<Vector2> minionPs = MinionManager.GetMinionsPredictedPositions(minions, 0.25f, 30f, 1800f, Player.ServerPosition, 475, false, Prediction.SkillshotType.SkillshotLine);
+                    //MinionManager.FarmLocation farm = Q.GetLineFarmLocation(minionPs); //MinionManager.GetBestLineFarmLocation(minionPs, 50f, 900f);
+                    Vector2 clos = Geometry.Closest(Player.ServerPosition.To2D(), minionPs);
+                    //if (farm.MinionsHit > 1)
+                    if(Player.Distance(clos)<475)
+                        Q.Cast(clos, false);
+                }
+            }
+            if(YasuoSharp.Config.Item("useWlc").GetValue<bool>())
+                foreach (var minion in minions.Where(minion => minion.IsValidTarget(Q.Range)))
+                {
+                    if (minion.Health < DamageLib.getDmg(minion, DamageLib.SpellType.E))
+                    {
+                        useENormal(minion);
+                        return;
+                    }
+                }
+        }
+
+        public static void doHarass(Obj_AI_Hero target)
+        {
+            useQSmart(target);
+        }
+
+
+        public static bool inTowerRange(Vector2 pos)
+        {
+            if (!YasuoSharp.Config.Item("djTur").GetValue<bool>())
+                return false;
+            foreach (Obj_AI_Turret tur in ObjectManager.Get<Obj_AI_Turret>().Where(tur => tur.IsEnemy && tur.Health > 0))
+            {
+                if (pos.Distance(tur.Position.To2D()) < (775+Player.BoundingRadius))
+                    return true;
+            }
+            return false;
+        }
 
         public static Vector3 getDashEndPos()
         {
             Vector2 dashPos2 = Player.GetDashInfo().EndPos;
-            return new Vector3(dashPos2, Player.Position.Z);
+            return new Vector3(dashPos2, Player.ServerPosition.Z);
         }
 
         public static bool isQEmpovered()
@@ -81,19 +159,6 @@ namespace Yasuo_Sharpino
             return Player.IsDashing();
         }
 
-        private static bool faceMe(Obj_AI_Hero target)
-        {
-            float angleB = Geometry.AngleBetween(Player.Orientation.To2D(), target.Path[0].To2D());
-            //Console.WriteLine("Play: " + Player.Path[0].ToString());
-            //Console.WriteLine("Targ: " + target.Path[0].ToString());
-            //Drawing.DrawCircle(Player.Path[0], 50, System.Drawing.Color.Blue);
-           // Drawing.DrawCircle(target.Path[0], 50, System.Drawing.Color.Red);
-           // Console.WriteLine(angleB);
-
-            return (Math.Abs(angleB) > Math.PI / 2);
-        }
-
-
         public static void useQSmart(Obj_AI_Hero target)
         {
             if (!Q.IsReady())
@@ -103,12 +168,11 @@ namespace Yasuo_Sharpino
             {
                 if (canCastFarQ())
                 {
-                    Prediction.PredictionOutput po = Prediction.GetBestAOEPosition(target, 0.25f, 50f, 1800f, Player.Position, 900f, false, Prediction.SkillshotType.SkillshotLine); //QEmp.GetPrediction(target, true);
+                    Prediction.PredictionOutput po = Prediction.GetBestAOEPosition(target, 0.25f, 50f, 1800f, Player.ServerPosition, 900f, false, Prediction.SkillshotType.SkillshotLine); //QEmp.GetPrediction(target, true);
                     if (po.HitChance >= Prediction.HitChance.HighHitchance && Player.Distance(po.CastPosition) < 900)
                     {
-                        Q.Cast(po.CastPosition, true);
+                        Q.Cast(po.CastPosition);
                     }
-
                 }
                 else//dashing
                 {
@@ -116,15 +180,15 @@ namespace Yasuo_Sharpino
                     Vector3 endPos = getDashEndPos();
                     if (Player.Distance(endPos) < 10 && target.Distance(endPos) < trueRange)
                     {
-                        QCir.Cast(target.Position, true);
+                        QCir.Cast(target.Position);
                     }
-                }
+                } 
             }
             else
             {
                 if (canCastFarQ())
                 {
-                    Q.CastIfWillHit(target, 1, true);
+                    Q.CastIfWillHit(target, 1);
                 }
                 else//dashing
                 {
@@ -132,14 +196,61 @@ namespace Yasuo_Sharpino
                     Vector3 endPos = getDashEndPos();
                     if (Player.Distance(endPos) < 5 && target.Distance(endPos) < trueRange)
                     {
-                        QCir.Cast(target.Position, true);
+                        QCir.Cast(target.Position);
                     }
                 }
             }
         }
 
+        public static void useWSmart(Obj_SpellMissile missle)
+        {
+           // Missle mis = new Missle(missle, obj);
+           // if (Player.Distance(missle.Position) > 400)
+           // {
+            //Console.WriteLine("izsauca");
+            if (missle.SpellCaster is Obj_AI_Hero && missle.IsEnemy)
+            {
+                Obj_AI_Base enemHero = missle.SpellCaster;
+                float dmg = (enemHero.BaseAttackDamage + enemHero.FlatPhysicalDamageMod);
+                if (missle.SData.Name.Contains("Crit"))
+                    dmg *= 2;
+
+                //if(dmg!=0)
+               // Console.WriteLine("Dmg: " + Player.PercentArmorMod);
+
+                if (!missle.SData.Name.Contains("Attack") || (enemHero.CombatType == GameObjectCombatType.Ranged && dmg > Player.MaxHealth / 8))
+                {
+                    if (YasMath.DistanceFromPointToLine(missle.SpellCaster.Position.To2D(), missle.EndPosition.To2D(), Yasuo.Player.ServerPosition.To2D()) < (Player.BoundingRadius + missle.BoundingRadius+20))
+                    {
+                        Vector3 blockWhere = missle.Position;//Player.Position + Vector3.Normalize(missle.SpellCaster.Position- Player.Position)*15;
+                        //Console.WriteLine(missle.SData.LineWidth + Player.BoundingRadius);
+                        if (Player.Distance(missle.Position) < 420)
+                        {
+                            //Console.WriteLine(missle.IsEnemy);
+                            if (W.IsReady())
+                            {
+                                W.Cast(blockWhere, true);
+                                YasuoSharp.skillShots.Clear();
+                            }
+                        }
+                    }
+                }
+            }
+           // }
+        }
+
+        public static void useENormal(Obj_AI_Base target)
+        {
+            Vector2 pPos = Player.ServerPosition.To2D();
+            Vector2 posAfterE = pPos + (Vector2.Normalize(target.Position.To2D() - pPos) * E.Range);
+            if(!inTowerRange(posAfterE))
+                E.Cast(target, false);
+        }
+
         public static bool useESmart(Obj_AI_Hero target,List<Obj_AI_Hero> ignore = null)
         {
+            if (!E.IsReady())
+                return false;
             float trueAARange = Player.AttackRange + target.BoundingRadius;
             float trueERange = target.BoundingRadius + E.Range;
 
@@ -160,7 +271,7 @@ namespace Yasuo_Sharpino
             {
                 if (timeToReach > 1.7f || timeToReach<0.0f)
                 {
-                    E.Cast(target, true);
+                    useENormal(target);
                     return true;
                 }
             }
@@ -169,7 +280,9 @@ namespace Yasuo_Sharpino
 
         public static void gapCloseE(Vector2 pos, List<Obj_AI_Hero> ignore = null)
         {
-            Vector2 pPos = Player.Position.To2D();
+            if (!E.IsReady())
+                return;
+            Vector2 pPos = Player.ServerPosition.To2D();
             Obj_AI_Base bestEnem = null;
             Vector2 bestLoc = pPos + (Vector2.Normalize(pos - pPos) * (Player.MoveSpeed * 0.35f));
             float bestDist = pos.Distance(bestLoc);
@@ -190,7 +303,7 @@ namespace Yasuo_Sharpino
                 }
             }
             if (bestEnem != null)
-                E.Cast(bestEnem, true);
+                useENormal(bestEnem);
 
         }
 
