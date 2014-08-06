@@ -12,10 +12,10 @@ using System.Drawing;
  * To DO:
  * Dont use skills on cd
  * Run +q
- * Fix Q far after Dash
- * 
- * 
- * 
+ * Fix Q far after Dash                  <-- done
+ * Run away (not to mouse to safety)
+ * Item support
+ * Auto level
  * 
  * 
  * 
@@ -50,52 +50,75 @@ namespace Yasuo_Sharpino
             Yasuo.point1 = Yasuo.Player.Position;
             Game.PrintChat("Yasuo - SharpSword by DeTuKs");
 
-            Config = new Menu("Yasuo - SharpSwrod", "Yasuo", true);
-            //Orbwalker
-            Config.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
-            Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalker"));
-            //TS
-            var TargetSelectorMenu = new Menu("Target Selector", "Target Selector");
-            SimpleTs.AddToMenu(TargetSelectorMenu);
-            Config.AddSubMenu(TargetSelectorMenu);
-            //Combo
-            Config.AddSubMenu(new Menu("Combo Sharp", "combo"));
-            Config.SubMenu("combo").AddItem(new MenuItem("comboItems", "Use Items")).SetValue(true);
-            //SmaetW
-            Config.SubMenu("combo").AddItem(new MenuItem("smartW", "Smart W")).SetValue(true);
-            //Flee away
-            Config.SubMenu("combo").AddItem(new MenuItem("flee", "E away")).SetValue(new KeyBind('X', KeyBindType.Press, false));
+            try
+            {
 
-            //LastHit
-            Config.AddSubMenu(new Menu("LastHit Sharp", "lHit"));
-            Config.SubMenu("lHit").AddItem(new MenuItem("useQlh", "Use Q")).SetValue(true);
-            Config.SubMenu("lHit").AddItem(new MenuItem("useElh", "Use E")).SetValue(true);
-            //LaneClear
-            Config.AddSubMenu(new Menu("LaneClear Sharp", "lClear"));
-            Config.SubMenu("lClear").AddItem(new MenuItem("useQlc", "Use Q")).SetValue(true);
-            Config.SubMenu("lClear").AddItem(new MenuItem("useEmpQHit", "Emp Q Min hit")).SetValue(new Slider(3,6,1));
-            Config.SubMenu("lClear").AddItem(new MenuItem("useElc", "Use E")).SetValue(true);
-            //Extra
-            Config.AddSubMenu(new Menu("Extra Sharp", "extra"));
-            Config.SubMenu("extra").AddItem(new MenuItem("djTur", "Dont Jump turrets")).SetValue(true);
+                Config = new Menu("Yasuo - SharpSwrod", "Yasuo", true);
+                //Orbwalker
+                Config.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
+                Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalker"));
+                //TS
+                var TargetSelectorMenu = new Menu("Target Selector", "Target Selector");
+                SimpleTs.AddToMenu(TargetSelectorMenu);
+                Config.AddSubMenu(TargetSelectorMenu);
+                //Combo
+                Config.AddSubMenu(new Menu("Combo Sharp", "combo"));
+                Config.SubMenu("combo").AddItem(new MenuItem("comboItems", "Use Items")).SetValue(true);
+                //SmaetW
+                Config.SubMenu("combo").AddItem(new MenuItem("smartW", "Smart W")).SetValue(true);
+                //Flee away
+                Config.SubMenu("combo").AddItem(new MenuItem("flee", "E away")).SetValue(new KeyBind('X', KeyBindType.Press, false));
 
-            //Debug
-            Config.AddSubMenu(new Menu("Debug", "debug"));
-            Config.SubMenu("debug").AddItem(new MenuItem("db_targ", "Debug Target")).SetValue(new KeyBind('T', KeyBindType.Press, false));
+                //LastHit
+                Config.AddSubMenu(new Menu("LastHit Sharp", "lHit"));
+                Config.SubMenu("lHit").AddItem(new MenuItem("useQlh", "Use Q")).SetValue(true);
+                Config.SubMenu("lHit").AddItem(new MenuItem("useElh", "Use E")).SetValue(true);
+                //LaneClear
+                Config.AddSubMenu(new Menu("LaneClear Sharp", "lClear"));
+                Config.SubMenu("lClear").AddItem(new MenuItem("useQlc", "Use Q")).SetValue(true);
+                Config.SubMenu("lClear").AddItem(new MenuItem("useEmpQHit", "Emp Q Min hit")).SetValue(new Slider(3,6,1));
+                Config.SubMenu("lClear").AddItem(new MenuItem("useElc", "Use E")).SetValue(true);
+                //Harass
+                Config.AddSubMenu(new Menu("Harass Sharp", "harass"));
+                Config.SubMenu("harass").AddItem(new MenuItem("harassOn", "Harass enemies")).SetValue(true);
+                Config.SubMenu("harass").AddItem(new MenuItem("harQ3Only", "Use only Q3")).SetValue(false);
+                //Extra
+                Config.AddSubMenu(new Menu("Extra Sharp", "extra"));
+                Config.SubMenu("extra").AddItem(new MenuItem("djTur", "Dont Jump turrets")).SetValue(true);
+                Config.SubMenu("extra").AddItem(new MenuItem("disDraw", "Dissabel drawing")).SetValue(false);
+
+                //Debug
+                Config.AddSubMenu(new Menu("Debug", "debug"));
+                Config.SubMenu("debug").AddItem(new MenuItem("db_targ", "Debug Target")).SetValue(new KeyBind('T', KeyBindType.Press, false));
 
             
-            Config.AddToMainMenu();
-            Drawing.OnDraw += onDraw;
-            Game.OnGameUpdate += OnGameUpdate;
+                Config.AddToMainMenu();
+                Drawing.OnDraw += onDraw;
+                Game.OnGameUpdate += OnGameUpdate;
 
-            GameObject.OnCreate += OnCreateObject;
-            GameObject.OnDelete += OnDeleteObject;
-            Obj_AI_Base.OnProcessSpellCast += OnProcessSpell;
+                GameObject.OnCreate += OnCreateObject;
+                GameObject.OnDelete += OnDeleteObject;
+                Obj_AI_Base.OnProcessSpellCast += OnProcessSpell;
+            }
+            catch
+            {
+                Game.PrintChat("Oops. Something went wrong with Yasuo- Sharpino");
+            }
 
         }
 
         private static void OnGameUpdate(EventArgs args)
         {
+          /*  Console.Clear();
+            Console.WriteLine("AA; "+Yasuo.Player.IsAutoAttacking);
+            Console.WriteLine("Root: "+Yasuo.Player.IsRooted);
+            Console.WriteLine("chan: " + Yasuo.Player.IsChanneling);
+            if (Config.Item("db_targ").GetValue<KeyBind>().Active)
+            {
+                Console.Clear();
+                Console.WriteLine(Yasuo.isDashing());
+            }*/
+            
            
             
             if (Orbwalker.ActiveMode.ToString() == "Combo")
@@ -109,6 +132,7 @@ namespace Yasuo_Sharpino
 
             if (Orbwalker.ActiveMode.ToString() == "Mixed")
             {
+               // Console.WriteLine("wdawad");
                 Obj_AI_Hero target = SimpleTs.GetTarget(1250, SimpleTs.DamageType.Physical);
                 Yasuo.doLastHit(target);
                 Yasuo.useQSmart(target);
@@ -124,29 +148,38 @@ namespace Yasuo_Sharpino
             {
                 Yasuo.gapCloseE(Game.CursorPos.To2D());
             }
+            if (Config.Item("harassOn").GetValue<bool>() && Orbwalker.ActiveMode.ToString() == "None")
+            {
+                Obj_AI_Hero target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
+                Yasuo.useQSmart(target, Config.Item("harQ3Only").GetValue<bool>());
+            }
 
             if (Config.Item("smartW").GetValue<bool>())
                 foreach (Obj_SpellMissile mis in skillShots)
                 {
-                    Yasuo.useWSmart(mis);
+                    if(mis.IsValid)
+                        Yasuo.useWSmart(mis);
                 }
         }
 
         private static void onDraw(EventArgs args)
         {
-            if (Yasuo.isDashing())
+            if (Config.Item("disDraw").GetValue<bool>())
+                return; 
+                                if (Yasuo.isDashing())
                 Drawing.DrawCircle(Yasuo.getDashEndPos(), 50, Color.Purple);
+
+            Drawing.DrawCircle(Yasuo.Player.Position, 475, Color.Blue);
 
          //   Drawing.DrawCircle(Yasuo.point1, 66, Color.Orange);
          //   Drawing.DrawCircle(Yasuo.point2, 66, Color.Orange);
         //    Drawing.DrawLine(Yasuo.point1.X, Yasuo.point1.Y, Yasuo.point2.X, Yasuo.point2.Y, 10f, Color.Blue);
 
-            foreach (Obj_AI_Turret tur in ObjectManager.Get<Obj_AI_Turret>().Where(tur => tur.IsEnemy && tur.Health > 0))
+           /* foreach (Obj_AI_Turret tur in ObjectManager.Get<Obj_AI_Turret>().Where(tur => tur.IsEnemy && tur.Health > 0))
             {
                 Drawing.DrawCircle(tur.Position, tur.CastRange, Color.Blue);
             }
 
-            Drawing.DrawCircle(Yasuo.Player.Position, 475, Color.Blue);
             Drawing.DrawCircle(Yasuo.test, 47, Color.Blue);
 
             Drawing.DrawCircle(Game.CursorPos, 47, Color.Blue);
@@ -157,7 +190,7 @@ namespace Yasuo_Sharpino
                 Drawing.DrawCircle(minion.Position, 47, Color.White);
             }
 
-            foreach (Obj_SpellMissile mis in skillShots)
+            */foreach (Obj_SpellMissile mis in skillShots)
             {
               
 
