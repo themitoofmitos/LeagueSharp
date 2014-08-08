@@ -72,12 +72,6 @@ namespace RivenSharp
         }
 
         /*
-         * 1073741830 garen
-         * 1073741829 my
-         * 
-         * 
-         * 
-         * 
          * 
          */
         private static void OnGameUpdate(EventArgs args)
