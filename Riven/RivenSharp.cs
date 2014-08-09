@@ -183,7 +183,7 @@ namespace RivenSharp
                         Utility.DelayAction.Add(Game.Ping, delegate { Riven.cancelAnim(); });
                     Console.WriteLine(cast.Slot + " : " + Game.Ping);
                     if (cast.Slot == SpellSlot.Q)
-                        Riven.orbwalker.resetAA();
+                        Orbwalking.ResetAutoAttackTimer();
                     else if (cast.Slot == SpellSlot.W && Riven.Q.IsReady())
                         Utility.DelayAction.Add(Game.Ping+200, delegate { Riven.useHydra(Riven.orbwalker.GetTarget()); });
                     else if (cast.Slot == SpellSlot.E && Riven.W.IsReady())
@@ -193,7 +193,7 @@ namespace RivenSharp
                     }
                     else if ((int)cast.Slot == 131 && Riven.W.IsReady())
                     {
-                        Riven.orbwalker.resetAA();
+                        Orbwalking.ResetAutoAttackTimer();
                         Utility.DelayAction.Add(Game.Ping +200, delegate { Riven.useWSmart(Riven.orbwalker.GetTarget()); });
                     }
                         // LogPacket(args);
