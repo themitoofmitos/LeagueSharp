@@ -15,7 +15,7 @@ using System.Drawing;
  * Fix Q far after Dash                  <-- done
  * Run away (not to mouse to safety)
  * Item support
- * Auto level
+ * Auto level                            <-- done
  * Overkill minions too
  * 
  * 
@@ -45,7 +45,6 @@ namespace Yasuo_Sharpino
         {
             /* CallBAcks */
             CustomEvents.Game.OnGameLoad += onLoad;
-          
         }
 
         private static void onLoad(EventArgs args)
@@ -68,11 +67,11 @@ namespace Yasuo_Sharpino
                 //Combo
                 Config.AddSubMenu(new Menu("Combo Sharp", "combo"));
                 Config.SubMenu("combo").AddItem(new MenuItem("comboItems", "Use Items")).SetValue(true);
-                //SmaetW
+                //SmartW
                 Config.SubMenu("combo").AddItem(new MenuItem("smartW", "Smart W")).SetValue(true);
-                //SmaetR
+                //SmartR
                 Config.SubMenu("combo").AddItem(new MenuItem("smartR", "Smart R")).SetValue(true);
-                Config.SubMenu("lClear").AddItem(new MenuItem("useRHit", "Use R if hit")).SetValue(new Slider(3, 5, 1));
+                Config.SubMenu("combo").AddItem(new MenuItem("useRHit", "Use R if hit")).SetValue(new Slider(3, 5, 1));
                 //Flee away
                 Config.SubMenu("combo").AddItem(new MenuItem("flee", "E away")).SetValue(new KeyBind('X', KeyBindType.Press, false));
 
@@ -88,12 +87,19 @@ namespace Yasuo_Sharpino
                 Config.SubMenu("lClear").AddItem(new MenuItem("useElc", "Use E")).SetValue(true);
                 //Harass
                 Config.AddSubMenu(new Menu("Harass Sharp", "harass"));
+                Config.SubMenu("harass").AddItem(new MenuItem("harassTower", "Harass under tower")).SetValue(false);
                 Config.SubMenu("harass").AddItem(new MenuItem("harassOn", "Harass enemies")).SetValue(true);
                 Config.SubMenu("harass").AddItem(new MenuItem("harQ3Only", "Use only Q3")).SetValue(false);
                 //Extra
                 Config.AddSubMenu(new Menu("Extra Sharp", "extra"));
                 Config.SubMenu("extra").AddItem(new MenuItem("djTur", "Dont Jump turrets")).SetValue(true);
                 Config.SubMenu("extra").AddItem(new MenuItem("disDraw", "Dissabel drawing")).SetValue(false);
+                List<string> levStrings = new List<string>();
+               // levStrings.Add("None");
+               // levStrings.Add("Q E W Q start");
+               // levStrings.Add("Q E Q W start");
+                Config.SubMenu("extra").AddItem(new MenuItem("autoLevel", "Auto Level")).SetValue(true);
+                Config.SubMenu("extra").AddItem(new MenuItem("levUpSeq", "")).SetValue(new StringList(new string[2] { "Q E W Q start", "Q E Q W start" }));
 
                 //Debug
                 Config.AddSubMenu(new Menu("Debug", "debug"));
@@ -107,6 +113,7 @@ namespace Yasuo_Sharpino
                 GameObject.OnCreate += OnCreateObject;
                 GameObject.OnDelete += OnDeleteObject;
                 Obj_AI_Base.OnProcessSpellCast += OnProcessSpell;
+                CustomEvents.Unit.OnLevelUp += OnLevelUp;
             }
             catch
             {
@@ -182,6 +189,8 @@ namespace Yasuo_Sharpino
             if (sender is Obj_SpellMissile && sender.IsEnemy)
             {
                 Obj_SpellMissile missle = (Obj_SpellMissile)sender;
+                if(Yasuo.WIgnore.Contains(missle.SData.Name))
+                    return;
                 skillShots.Add(missle);
             }
         }
@@ -205,6 +214,20 @@ namespace Yasuo_Sharpino
             if (obj.Name.Contains("Turret") || obj.Name.Contains("Minion"))
                 return;
         }
+
+        public static void OnLevelUp(LeagueSharp.Obj_AI_Base sender, LeagueSharp.Common.CustomEvents.Unit.OnLevelUpEventArgs args)
+        {
+            if (sender.NetworkId == Yasuo.Player.NetworkId)
+            {
+                if (!Config.Item("autoLevel").GetValue<bool>())
+                    return;
+                if (Config.Item("levUpSeq").GetValue<StringList>().SelectedIndex == 0)
+                    Utility.LevelUpSpell(Yasuo.sBook, Yasuo.levelUpSeq[args.NewLevel-1].Slot);
+                else if (Config.Item("levUpSeq").GetValue<StringList>().SelectedIndex == 1)
+                    Utility.LevelUpSpell(Yasuo.sBook, Yasuo.levelUpSeq2[args.NewLevel - 1].Slot);
+            }
+        }
+
 
     }
 }

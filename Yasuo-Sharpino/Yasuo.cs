@@ -13,7 +13,6 @@ namespace Yasuo_Sharpino
 {
     class Yasuo
     {
-
         public static Obj_AI_Hero Player = ObjectManager.Player;
 
         public static Vector3 test = new Vector3();
@@ -30,7 +29,14 @@ namespace Yasuo_Sharpino
         public static Spell W = new Spell(SpellSlot.W, 400);
         public static Spell E = new Spell(SpellSlot.E, 475);
         public static Spell R = new Spell(SpellSlot.R, 1200);
+        //Much Skillshot                    1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
+        public static Spell[] levelUpSeq = {Q,E,W,Q,Q,R,Q,E,Q,E,R,E,W,E,W,R,W,W};
 
+        //Much NotSoMuch                    1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
+        public static Spell[] levelUpSeq2 = {Q,E,Q,W,Q,R,Q,E,Q,E,R,E,W,E,W,R,W,W};
+
+        //Ignore these spells with W
+        public static List<string> WIgnore;
 
         public static Vector3 point1 = new Vector3();
         public static Vector3 point2 = new Vector3();
@@ -79,7 +85,6 @@ namespace Yasuo_Sharpino
         public static void doLaneClear(Obj_AI_Hero target)
         {
             List<Obj_AI_Base> minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + 50);
-
 
             if (Q.IsReady()  && YasuoSharp.Config.Item("useQlc").GetValue<bool>())
             {
@@ -133,14 +138,15 @@ namespace Yasuo_Sharpino
 
         public static void doHarass(Obj_AI_Hero target)
         {
-            useQSmart(target);
+            if (!inTowerRange(Player.ServerPosition.To2D()) || YasuoSharp.Config.Item("harassTower").GetValue<bool>())
+             useQSmart(target);
         }
 
 
         public static bool inTowerRange(Vector2 pos)
         {
-            if (!YasuoSharp.Config.Item("djTur").GetValue<bool>())
-                return false;
+          //  if (!YasuoSharp.Config.Item("djTur").GetValue<bool>())
+         //      return false;
             foreach (Obj_AI_Turret tur in ObjectManager.Get<Obj_AI_Turret>().Where(tur => tur.IsEnemy && tur.Health > 0))
             {
                 if (pos.Distance(tur.Position.To2D()) < (850+Player.BoundingRadius))
@@ -253,7 +259,7 @@ namespace Yasuo_Sharpino
                         {
                             if (W.IsReady())
                             {
-                                YasuoSharp.lastSpell = missle.Name;
+                                YasuoSharp.lastSpell = missle.SData.Name;
                                 W.Cast(blockWhere, true);
                                 YasuoSharp.skillShots.Clear();
                             }
@@ -267,7 +273,7 @@ namespace Yasuo_Sharpino
         {
             Vector2 pPos = Player.ServerPosition.To2D();
             Vector2 posAfterE = pPos + (Vector2.Normalize(target.Position.To2D() - pPos) * E.Range);
-            if (!inTowerRange(posAfterE) && !Player.IsChanneling)
+            if ((!inTowerRange(posAfterE) || !YasuoSharp.Config.Item("djTur").GetValue<bool>()) && !Player.IsChanneling)
                 E.Cast(target, false);
         }
 
@@ -346,6 +352,13 @@ namespace Yasuo_Sharpino
                 if (aroundAir >= YasuoSharp.Config.Item("useRHit").GetValue<Slider>().Value)
                     R.Cast(enem);
             }
+        }
+
+
+        public static void setWIgnore()
+        {
+            WIgnore.Add("");
+
         }
 
         public static bool enemyIsJumpable(Obj_AI_Base enemy, List<Obj_AI_Hero> ignore = null)
