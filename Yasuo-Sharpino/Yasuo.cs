@@ -45,21 +45,20 @@ namespace Yasuo_Sharpino
         public static void doCombo(Obj_AI_Hero target)
         {
             if (target == null) return;
-
+            if (YasuoSharp.Config.Item("smartR").GetValue<bool>())
+                useRSmart();
             
             if (!useESmart(target))
             {
-                List<Obj_AI_Hero> ign = new List<Obj_AI_Hero>();
-                ign.Add(target);
-                gapCloseE(target.Position.To2D(), ign);
+                List<Obj_AI_Hero> ignore = new List<Obj_AI_Hero>();
+                ignore.Add(target);
+                gapCloseE(target.Position.To2D(), ignore);
             }
             useQSmart(target);
         }
 
         public static void doLastHit(Obj_AI_Hero target)
         {
-           // if (!Orbwalking.CanAttack())
-            //    return;
             var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + 50);
             foreach ( var minion in minions.Where( minion => minion.IsValidTarget(Q.Range)))
             {
@@ -90,7 +89,6 @@ namespace Yasuo_Sharpino
                     {
                         List<Vector2> minionPs = MinionManager.GetMinionsPredictedPositions(minions, 0.25f, 50f, 1200f, Player.ServerPosition, 900f, false, Prediction.SkillshotType.SkillshotLine);
                         MinionManager.FarmLocation farm = QEmp.GetLineFarmLocation(minionPs); //MinionManager.GetBestLineFarmLocation(minionPs, 50f, 900f);
-                        //Console.WriteLine(farm.MinionsHit);
                         if (farm.MinionsHit >= YasuoSharp.Config.Item("useEmpQHit").GetValue<Slider>().Value)
                             QEmp.Cast(farm.Position, false);
                     }
@@ -98,17 +96,8 @@ namespace Yasuo_Sharpino
                     {
                         List<Vector2> minionPs = MinionManager.GetMinionsPredictedPositions(minions, 0.5f, 270f, float.MaxValue, getDashEndPos(), 0, false, Prediction.SkillshotType.SkillshotCircle,getDashEndPos());
                         MinionManager.FarmLocation farm = QCir.GetCircularFarmLocation(minionPs); //MinionManager.GetBestLineFarmLocation(minionPs, 50f, 900f);
-                        //Console.WriteLine(farm.MinionsHit);
                         if (farm.MinionsHit >= YasuoSharp.Config.Item("useEmpQHit").GetValue<Slider>().Value)
                             QCir.Cast(farm.Position, false);
-                            /*foreach (Vector2 min in minionPs)
-                            {
-                                if (Player.Distance(min) < 270F)
-                                {
-                                    QCir.Cast(min, false);
-                                    break;
-                                }
-                            }*/
                     }
                 }
                 else
@@ -116,28 +105,16 @@ namespace Yasuo_Sharpino
                     if (canCastFarQ())
                     {
                         List<Vector2> minionPs = MinionManager.GetMinionsPredictedPositions(minions, 0.25f, 30f, 1800f, Player.ServerPosition, 475, false, Prediction.SkillshotType.SkillshotLine);
-                        //MinionManager.FarmLocation farm = Q.GetLineFarmLocation(minionPs); //MinionManager.GetBestLineFarmLocation(minionPs, 50f, 900f);
                         Vector2 clos = Geometry.Closest(Player.ServerPosition.To2D(), minionPs);
-                        //if (farm.MinionsHit > 1)
                         if (Player.Distance(clos) < 475)
                             Q.Cast(clos, false);
                     }
                     else
                     {
-                      //  List<Vector2> minionPs = MinionManager.GetMinionsPredictedPositions(minions, 0.25f, 30f, 1800f, Player.ServerPosition, 475, false, Prediction.SkillshotType.SkillshotLine);
                         List<Vector2> minionPs = MinionManager.GetMinionsPredictedPositions(minions, 0.5f, 270f, float.MaxValue, getDashEndPos(), 0, false, Prediction.SkillshotType.SkillshotCircle, getDashEndPos());
                         MinionManager.FarmLocation farm = QCir.GetCircularFarmLocation(minionPs); //MinionManager.GetBestLineFarmLocation(minionPs, 50f, 900f);
-                       // Console.WriteLine(farm.MinionsHit);
                         if (farm.MinionsHit > 2)
                             QCir.Cast(farm.Position, false);
-                        /*foreach (Vector2 min in minionPs)
-                        {
-                            if(Player.Distance(min)<270F)
-                            {
-                                QCir.Cast(min, false);
-                                break;
-                            }
-                        }*/
                     }
                 }
             }
@@ -198,6 +175,24 @@ namespace Yasuo_Sharpino
             return Player.IsDashing();
         }
 
+
+        public static List<Obj_AI_Hero> getKockUpEnemies()
+        {
+            List<Obj_AI_Hero> enemKonck = new List<Obj_AI_Hero>();
+            foreach (Obj_AI_Hero enem in ObjectManager.Get<Obj_AI_Hero>().Where(enem => enem.IsEnemy))
+            {
+                foreach(BuffInstance buff in enem.Buffs)
+                {
+                    if (buff.Type == BuffType.Knockback || buff.Type == BuffType.Knockup)
+                    {
+                        enemKonck.Add(enem);
+                        break;
+                    }
+                }
+            }
+            return enemKonck;
+        }
+
         public static void useQSmart(Obj_AI_Hero target,bool onlyEmp = false)
         {
             if (!Q.IsReady())
@@ -243,30 +238,22 @@ namespace Yasuo_Sharpino
 
         public static void useWSmart(Obj_SpellMissile missle)
         {
-           // Missle mis = new Missle(missle, obj);
-           // if (Player.Distance(missle.Position) > 400)
-           // {
-            //Console.WriteLine("izsauca");
             if (missle.SpellCaster is Obj_AI_Hero && missle.IsEnemy)
             {
                 Obj_AI_Base enemHero = missle.SpellCaster;
                 float dmg = (enemHero.BaseAttackDamage + enemHero.FlatPhysicalDamageMod);
                 if (missle.SData.Name.Contains("Crit"))
                     dmg *= 2;
-
-                //if(dmg!=0)
-               // Console.WriteLine("Dmg: " + Player.PercentArmorMod);
                 if (!missle.SData.Name.Contains("Attack") || (enemHero.CombatType == GameObjectCombatType.Ranged && dmg > Player.MaxHealth / 8))
                 {
                     if (YasMath.DistanceFromPointToLine(missle.SpellCaster.Position.To2D(), missle.EndPosition.To2D(), Yasuo.Player.ServerPosition.To2D()) < (Player.BoundingRadius + missle.BoundingRadius+20))
                     {
-                        Vector3 blockWhere = missle.Position;//Player.Position + Vector3.Normalize(missle.SpellCaster.Position- Player.Position)*15;
-                        //Console.WriteLine(missle.SData.LineWidth + Player.BoundingRadius);
+                        Vector3 blockWhere = missle.Position;
                         if (Player.Distance(missle.Position) < 420)
                         {
-                            //Console.WriteLine(missle.IsEnemy);
                             if (W.IsReady())
                             {
+                                YasuoSharp.lastSpell = missle.Name;
                                 W.Cast(blockWhere, true);
                                 YasuoSharp.skillShots.Clear();
                             }
@@ -274,12 +261,10 @@ namespace Yasuo_Sharpino
                     }
                 }
             }
-           // }
         }
 
         public static void useENormal(Obj_AI_Base target)
         {
-           // Game.PrintChat("Dashed");
             Vector2 pPos = Player.ServerPosition.To2D();
             Vector2 posAfterE = pPos + (Vector2.Normalize(target.Position.To2D() - pPos) * E.Range);
             if (!inTowerRange(posAfterE) && !Player.IsChanneling)
@@ -344,6 +329,23 @@ namespace Yasuo_Sharpino
             if (bestEnem != null)
                 useENormal(bestEnem);
 
+        }
+
+
+        public static void useRSmart()
+        {
+            List<Obj_AI_Hero> enemInAir = getKockUpEnemies();
+            foreach (Obj_AI_Hero enem in enemInAir)
+            {
+                int aroundAir = 0;
+                foreach (Obj_AI_Hero enem2 in enemInAir)
+                {
+                    if (Vector3.DistanceSquared(enem.ServerPosition, enem2.ServerPosition) < 400 * 400)
+                        aroundAir++;
+                }
+                if (aroundAir >= YasuoSharp.Config.Item("useRHit").GetValue<Slider>().Value)
+                    R.Cast(enem);
+            }
         }
 
         public static bool enemyIsJumpable(Obj_AI_Base enemy, List<Obj_AI_Hero> ignore = null)

@@ -15,8 +15,6 @@ namespace Yasuo_Sharpino
             Vector2 p3 = new Vector2();
             p3.X = pC.X + radius;
             p3.Y = pC.Y + radius;
-           // if ((p2.X - p1.X) == 0)
-              //  Console.WriteLine("whawdawdawdawdawfawfqwdfawfawfawfaw");
             float m = ((p2.Y - p1.Y) / (p2.X - p1.X));
             float Constant = (m * p1.X) - p1.Y;
 
@@ -26,7 +24,6 @@ namespace Yasuo_Sharpino
             float D = ((b * b) - (4f * a * c));
             if (D > 0)
             {
-              //  Console.WriteLine("Interacted!");
                 return true;
             }
             else

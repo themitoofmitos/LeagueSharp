@@ -16,6 +16,8 @@ using System.Drawing;
  * Run away (not to mouse to safety)
  * Item support
  * Auto level
+ * Overkill minions too
+ * 
  * 
  * 
  * 
@@ -36,6 +38,8 @@ namespace Yasuo_Sharpino
         public static Menu Config;
 
         public static List<Obj_SpellMissile> skillShots = new List<Obj_SpellMissile>();
+
+        public static string lastSpell = "";
 
         public YasuoSharp()
         {
@@ -66,8 +70,12 @@ namespace Yasuo_Sharpino
                 Config.SubMenu("combo").AddItem(new MenuItem("comboItems", "Use Items")).SetValue(true);
                 //SmaetW
                 Config.SubMenu("combo").AddItem(new MenuItem("smartW", "Smart W")).SetValue(true);
+                //SmaetR
+                Config.SubMenu("combo").AddItem(new MenuItem("smartR", "Smart R")).SetValue(true);
+                Config.SubMenu("lClear").AddItem(new MenuItem("useRHit", "Use R if hit")).SetValue(new Slider(3, 5, 1));
                 //Flee away
                 Config.SubMenu("combo").AddItem(new MenuItem("flee", "E away")).SetValue(new KeyBind('X', KeyBindType.Press, false));
+
 
                 //LastHit
                 Config.AddSubMenu(new Menu("LastHit Sharp", "lHit"));
@@ -89,7 +97,7 @@ namespace Yasuo_Sharpino
 
                 //Debug
                 Config.AddSubMenu(new Menu("Debug", "debug"));
-                Config.SubMenu("debug").AddItem(new MenuItem("db_targ", "Debug Target")).SetValue(new KeyBind('T', KeyBindType.Press, false));
+                Config.SubMenu("debug").AddItem(new MenuItem("WWLast", "Print last ww blocked")).SetValue(new KeyBind('T', KeyBindType.Press, false));
 
             
                 Config.AddToMainMenu();
@@ -109,30 +117,14 @@ namespace Yasuo_Sharpino
 
         private static void OnGameUpdate(EventArgs args)
         {
-          /*  Console.Clear();
-            Console.WriteLine("AA; "+Yasuo.Player.IsAutoAttacking);
-            Console.WriteLine("Root: "+Yasuo.Player.IsRooted);
-            Console.WriteLine("chan: " + Yasuo.Player.IsChanneling);
-            if (Config.Item("db_targ").GetValue<KeyBind>().Active)
-            {
-                Console.Clear();
-                Console.WriteLine(Yasuo.isDashing());
-            }*/
-            
-           
-            
             if (Orbwalker.ActiveMode.ToString() == "Combo")
             {
-                //Console.WriteLine(YasMath.DistanceFromPointToLine(Yasuo.point1.To2D(), Yasuo.point2.To2D(), Yasuo.Player.Position.To2D()));
-
-                //Yasuo.gapCloseE(Game.CursorPos.To2D());
                 Obj_AI_Hero target = SimpleTs.GetTarget(1250, SimpleTs.DamageType.Physical);
                 Yasuo.doCombo(target);
             }
 
             if (Orbwalker.ActiveMode.ToString() == "Mixed")
             {
-               // Console.WriteLine("wdawad");
                 Obj_AI_Hero target = SimpleTs.GetTarget(1250, SimpleTs.DamageType.Physical);
                 Yasuo.doLastHit(target);
                 Yasuo.useQSmart(target);
@@ -148,6 +140,13 @@ namespace Yasuo_Sharpino
             {
                 Yasuo.gapCloseE(Game.CursorPos.To2D());
             }
+
+            if (Config.Item("WWLast").GetValue<KeyBind>().Active)
+            {
+                Console.WriteLine("Last WW skill blocked: " + lastSpell);
+                Game.PrintChat("Last WW skill blocked: " + lastSpell);
+            }
+
             if (Config.Item("harassOn").GetValue<bool>() && Orbwalker.ActiveMode.ToString() == "None")
             {
                 Obj_AI_Hero target = SimpleTs.GetTarget(1000, SimpleTs.DamageType.Physical);
@@ -166,65 +165,25 @@ namespace Yasuo_Sharpino
         {
             if (Config.Item("disDraw").GetValue<bool>())
                 return; 
-                                if (Yasuo.isDashing())
-                Drawing.DrawCircle(Yasuo.getDashEndPos(), 50, Color.Purple);
-
             Drawing.DrawCircle(Yasuo.Player.Position, 475, Color.Blue);
 
-         //   Drawing.DrawCircle(Yasuo.point1, 66, Color.Orange);
-         //   Drawing.DrawCircle(Yasuo.point2, 66, Color.Orange);
-        //    Drawing.DrawLine(Yasuo.point1.X, Yasuo.point1.Y, Yasuo.point2.X, Yasuo.point2.Y, 10f, Color.Blue);
-
-           /* foreach (Obj_AI_Turret tur in ObjectManager.Get<Obj_AI_Turret>().Where(tur => tur.IsEnemy && tur.Health > 0))
+            foreach (Obj_SpellMissile mis in skillShots)
             {
-                Drawing.DrawCircle(tur.Position, tur.CastRange, Color.Blue);
-            }
-
-            Drawing.DrawCircle(Yasuo.test, 47, Color.Blue);
-
-            Drawing.DrawCircle(Game.CursorPos, 47, Color.Blue);
-
-            var minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Yasuo.Q.Range + 50);
-            foreach (var minion in minions.Where(minion => minion.IsValidTarget(Yasuo.Q.Range)))
-            {
-                Drawing.DrawCircle(minion.Position, 47, Color.White);
-            }
-
-            */foreach (Obj_SpellMissile mis in skillShots)
-            {
-              
-
                 Drawing.DrawCircle(mis.Position, 47, Color.Orange);
                 Drawing.DrawCircle(mis.EndPosition, 100, Color.BlueViolet);
                Drawing.DrawCircle(mis.SpellCaster.Position, Yasuo.Player.BoundingRadius + mis.SData.LineWidth, Color.DarkSalmon);
                 Drawing.DrawCircle(mis.StartPosition, 70, Color.Green);
-               // Drawing.DrawCircle(mis.SpellCaster.Position, 100, Color.BlueViolet);
-                //if(YasMath.interact(mis.EndPosition.To2D(), mis.Position.To2D(), Yasuo.Player.Position.To2D(), Yasuo.Player.BoundingRadius + mis.SData.LineWidth))
-
-               // Drawing.DrawCircle(mis.EndPosition, 47, Color.Orange);
             }
 
         }
 
         private static void OnCreateObject(GameObject sender, EventArgs args)
         {
-           // if (sender.Name.Contains("missile") || sender.Name.Contains("Minion"))
-            //    return;
-           // if (args is GameObjectProcessSpellCastEventArgs)
-              //  Console.WriteLine("itrsdasd");
-            //Obj_AI_Base objis = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(sender.NetworkId);
-            //Console.WriteLine(sender.Name+" - "+objis.SkinName);
-
-
             if (sender is Obj_SpellMissile && sender.IsEnemy)
             {
                 Obj_SpellMissile missle = (Obj_SpellMissile)sender;
-               // Console.WriteLine(missle.SData.Name);
-                    skillShots.Add(missle);
+                skillShots.Add(missle);
             }
-
-
-
         }
 
         private static void OnDeleteObject(GameObject sender, EventArgs args)
@@ -243,20 +202,9 @@ namespace Yasuo_Sharpino
 
         public static void OnProcessSpell(LeagueSharp.Obj_AI_Base obj, LeagueSharp.GameObjectProcessSpellCastEventArgs arg)
         {
-            
-
             if (obj.Name.Contains("Turret") || obj.Name.Contains("Minion"))
                 return;
-
-            //Missle mis = new Missle(arg, obj);
-            //Console.WriteLine(obj.Name + " - " + arg.SData.Name);
-            
-          
-            //Console.WriteLine(obj.BasicAttack.Name + " -:- " + arg.ToString());
         }
-
-
-      
 
     }
 }

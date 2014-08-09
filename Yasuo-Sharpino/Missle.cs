@@ -18,7 +18,6 @@ namespace Yasuo_Sharpino
         float Damage;
 
 
-        //Obj_SpellLineMissile
 
         public Missle(GameObjectProcessSpellCastEventArgs missle, Obj_AI_Base obj)
         {
@@ -61,7 +60,6 @@ namespace Yasuo_Sharpino
         private float calcDamage()
         {
             int slot = (int)getSpellSlot();
-            //Console.WriteLine(getSpellSlot() + " - " + Mis.SData.Name + " = " + caster.Name);
             if (Mis.SData.Name.Contains("BasicAttack"))
                 return (float)DamageLib.getDmg(caster, DamageLib.SpellType.AD);
             if (slot>-1 && slot<5)
