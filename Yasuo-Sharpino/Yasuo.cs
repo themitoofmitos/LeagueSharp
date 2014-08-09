@@ -84,7 +84,7 @@ namespace Yasuo_Sharpino
 
         public static void doLaneClear(Obj_AI_Hero target)
         {
-            List<Obj_AI_Base> minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + 50);
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + 50,MinionTypes.All,MinionTeam.NotAlly);
 
             if (Q.IsReady()  && YasuoSharp.Config.Item("useQlc").GetValue<bool>())
             {
@@ -357,7 +357,7 @@ namespace Yasuo_Sharpino
 
         public static void setWIgnore()
         {
-            WIgnore.Add("");
+            WIgnore.Add("LuxPrismaticWaveMissile");
 
         }
 
