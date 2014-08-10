@@ -68,7 +68,7 @@ namespace KarmaSharp
                 Config.SubMenu("harass").AddItem(new MenuItem("useQHar", "Use Q with R")).SetValue(true);
                 //Extra
                 Config.AddSubMenu(new Menu("Extra Sharp", "extra"));
-                
+                Config.SubMenu("harass").AddItem(new MenuItem("useMinions", "Use minions on Q")).SetValue(true);
 
                 //Debug
               //  Config.AddSubMenu(new Menu("Debug", "debug"));

@@ -57,16 +57,31 @@ namespace KarmaSharp
             if (!Q.IsReady())
                 return;
             Prediction.PredictionOutput predict = Q.GetPrediction(target);
-            if (predict.HitChance == Prediction.HitChance.Collision)
+            if (predict.HitChance == Prediction.HitChance.Collision )
             {
-               // Console.WriteLine("minions");
-                Obj_AI_Base fistCol = predict.CollisionUnitsList.OrderBy(unit => unit.Distance(Player.ServerPosition)).First();
-                if (fistCol.Distance(predict.Position) < (210 - fistCol.BoundingRadius / 2))
+                if (KarmaSharp.Config.Item("useMinions").GetValue<bool>())
                 {
-                   // Console.WriteLine("Casted in minions");
-                    useRSmart();
-                    Q.Cast(predict.CastPosition);
-                    return;
+                    /*List<Obj_AI_Base> enemHeros = new List<Obj_AI_Base>();
+                    foreach (Obj_AI_Hero enem in ObjectManager.Get<Obj_AI_Hero>().Where(enem => enem.IsEnemy && enem.IsValidTarget()))
+                    {
+                        // Vector3 predPos = Q.GetPrediction(enem).Position;
+                        enemHeros.Add((Obj_AI_Base)enem);
+                    }
+
+                    // Console.WriteLine("minions");
+                    predict.CollisionUnitsList.AddRange(enemHeros);
+                      Obj_AI_Base fistCol = predict.CollisionUnitsList.OrderBy(unit => (unit is Obj_AI_Hero) ? Player.Distance(Q.GetPrediction(unit).Position) : unit.Distance(Player.ServerPosition)).First();
+                   
+                     */
+
+                    Obj_AI_Base fistCol = predict.CollisionUnitsList.OrderBy(unit => unit.Distance(Player.ServerPosition)).First();
+                    if (fistCol.Distance(predict.Position) < (180 - fistCol.BoundingRadius / 2) && fistCol.Distance(target.ServerPosition) < (200 - fistCol.BoundingRadius / 2))
+                    {
+                        // Console.WriteLine("Casted in minions");
+                        useRSmart();
+                        Q.Cast(predict.CastPosition);
+                        return;
+                    }
                 }
             }
             else if(predict.HitChance != Prediction.HitChance.CantHit && predict.CollisionUnitsList.Count == 0)
