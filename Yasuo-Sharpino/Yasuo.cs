@@ -25,7 +25,7 @@ namespace Yasuo_Sharpino
         public static SpellDataInst Rdata = sBook.GetSpell(SpellSlot.R);
         public static Spell Q = new Spell(SpellSlot.Q, 475);
         public static Spell QEmp = new Spell(SpellSlot.Q, 900);
-        public static Spell QCir = new Spell(SpellSlot.Q, 375);
+        public static Spell QCir = new Spell(SpellSlot.Q, 320);
         public static Spell W = new Spell(SpellSlot.W, 400);
         public static Spell E = new Spell(SpellSlot.E, 475);
         public static Spell R = new Spell(SpellSlot.R, 1200);
@@ -101,8 +101,8 @@ namespace Yasuo_Sharpino
                     {
                         List<Vector2> minionPs = MinionManager.GetMinionsPredictedPositions(minions, 0.5f, 270f, float.MaxValue, getDashEndPos(), 0, false, Prediction.SkillshotType.SkillshotCircle,getDashEndPos());
                         MinionManager.FarmLocation farm = QCir.GetCircularFarmLocation(minionPs); //MinionManager.GetBestLineFarmLocation(minionPs, 50f, 900f);
-                        if (farm.MinionsHit >= YasuoSharp.Config.Item("useEmpQHit").GetValue<Slider>().Value)
-                            QCir.Cast(farm.Position, false);
+                        //if (farm.MinionsHit >= YasuoSharp.Config.Item("useEmpQHit").GetValue<Slider>().Value)
+                           // QCir.Cast(farm.Position, false);
                     }
                 }
                 else
