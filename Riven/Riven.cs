@@ -36,6 +36,7 @@ namespace RivenSharp
             useESmart(target);
             useWSmart(target,true);
             useHydra(target);
+            useRSmart((Obj_AI_Hero)target);
         }
 
 
@@ -77,6 +78,13 @@ namespace RivenSharp
                     E.Cast(target.ServerPosition);
             }
         }
+        public static void useRSmart(Obj_AI_Hero target)
+        {
+            if (target.Distance(Player.ServerPosition) > (Player.AttackRange + target.BoundingRadius) + 20)
+                if (DamageLib.getDmg(target, DamageLib.SpellType.R) > (target.Health - 5 * target.Level) && R.IsReady())
+                    R.Cast(target.ServerPosition);
+        }
+
 
         public static void useHydra(Obj_AI_Base target)
         {

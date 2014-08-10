@@ -46,7 +46,10 @@ namespace RivenSharp
             //Orbwalker
             Config.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
            Riven.orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalker"));
-
+           //TS
+           var TargetSelectorMenu = new Menu("Target Selector", "Target Selector");
+           SimpleTs.AddToMenu(TargetSelectorMenu);
+           Config.AddSubMenu(TargetSelectorMenu);
             //Combo
             Config.AddSubMenu(new Menu("Combo Sharp", "combo"));
             Config.SubMenu("combo").AddItem(new MenuItem("comboItems", "Use Items")).SetValue(true);

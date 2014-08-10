@@ -22,15 +22,14 @@ namespace HiddenObj
             GameObject.OnCreate += OnCreateObject;
             GameObject.OnDelete += OnDeleteObject;
             Obj_AI_Base.OnProcessSpellCast += OnProcessSpell;
+            Drawing.OnDraw += onDraw;
         }
 
         public static void OnProcessSpell(LeagueSharp.Obj_AI_Base obj, LeagueSharp.GameObjectProcessSpellCastEventArgs arg)
         {
-            if (obj.Name.Contains("Turret") || obj.Name.Contains("Minion"))
-                return;
-            Console.WriteLine(obj.BasicAttack.Name+" -:- "+obj.SkinName);
-            
-
+           // if (obj.Name.Contains("Turret") || obj.Name.Contains("Minion"))
+           //     return;
+           // Console.WriteLine(obj.BasicAttack.Name+" -:- "+obj.SkinName);
         }
 
 
@@ -41,7 +40,7 @@ namespace HiddenObj
                 return;
 
             Obj_AI_Base objis = ObjectManager.GetUnitByNetworkId<Obj_AI_Base>(sender.NetworkId);
-            Console.WriteLine(sender.Name+" - "+objis.SkinName);
+            //Console.WriteLine(sender.Name+" - "+objis.SkinName);
             //Console.WriteLine(sender.Name + " - " + sender.Type + " - " + sender.Flags);
             HidObject ho = HidObjects.IsHidObj(objis.SkinName);
             if (ho != null)
@@ -67,12 +66,12 @@ namespace HiddenObj
         private static void onLoad(EventArgs args)
         {
             Game.PrintChat("Hidden Objects 0.1 by DeTuKs");
-            Drawing.OnDraw += onDraw;
+            
         }
 
         private static void onDraw(EventArgs args)
         {
-            Utility.DrawCircle(ObjectManager.Player.Position, 500, System.Drawing.Color.FromArgb(255, 186, 201, 46));
+            //Utility.DrawCircle(ObjectManager.Player.Position, 500, System.Drawing.Color.FromArgb(255, 186, 201, 46));
             //Drawing.DrawText(ObjectManager.Player.Position.X, ObjectManager.Player.Position.Z, Color.FromArgb(255, 0, 0, 0), "awdawawd");
             foreach (var lho in allObjects)
             {
