@@ -189,8 +189,8 @@ namespace Yasuo_Sharpino
             if (sender is Obj_SpellMissile && sender.IsEnemy)
             {
                 Obj_SpellMissile missle = (Obj_SpellMissile)sender;
-                if(Yasuo.WIgnore.Contains(missle.SData.Name))
-                    return;
+               // if(Yasuo.WIgnore.Contains(missle.SData.Name))
+               //     return;
                 skillShots.Add(missle);
             }
         }
