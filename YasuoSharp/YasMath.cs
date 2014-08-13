@@ -12,6 +12,7 @@ namespace Yasuo_Sharpino
     {
         public static bool interact(Vector2 p1, Vector2 p2, Vector2 pC, float radius)
         {
+            
             Vector2 p3 = new Vector2();
             p3.X = pC.X + radius;
             p3.Y = pC.Y + radius;

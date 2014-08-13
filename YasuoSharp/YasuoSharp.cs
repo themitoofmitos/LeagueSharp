@@ -29,6 +29,8 @@ namespace Yasuo_Sharpino
     internal class YasuoSharp
     {
 
+        public static Map map;
+
         public const string CharName = "Yasuo";
         //Orbwalker
         public static Orbwalking.Orbwalker Orbwalker;
@@ -43,8 +45,10 @@ namespace Yasuo_Sharpino
 
         public YasuoSharp()
         {
+            map = new Map();
             /* CallBAcks */
             CustomEvents.Game.OnGameLoad += onLoad;
+
         }
 
         private static void onLoad(EventArgs args)
@@ -174,13 +178,31 @@ namespace Yasuo_Sharpino
                 return; 
             Drawing.DrawCircle(Yasuo.Player.Position, 475, Color.Blue);
 
+         /*   if ((int)NavMesh.GetCollisionFlags(Game.CursorPos) == 2 || (int)NavMesh.GetCollisionFlags(Game.CursorPos) == 64)
+                Drawing.DrawCircle(Game.CursorPos, 70, Color.Green);
+            if (map.isWall(Game.CursorPos.To2D()))
+                Drawing.DrawCircle(Game.CursorPos, 100, Color.Red);
+
+            foreach (Polygon pol in map.poligs)
+            {
+                pol.Draw(Color.BlueViolet, 3);
+            }
+
+            foreach(Obj_AI_Base jun in MinionManager.GetMinions(Yasuo.Player.ServerPosition,700,MinionTypes.All,MinionTeam.Neutral))
+            {
+                Drawing.DrawCircle(jun.Position, 70, Color.Green);
+                 SharpDX.Vector2 proj = map.getClosestPolygonProj(jun.ServerPosition.To2D());
+                 SharpDX.Vector2 posAfterE = jun.ServerPosition.To2D() + (SharpDX.Vector2.Normalize(proj - jun.ServerPosition.To2D() ) * 475);
+                 Drawing.DrawCircle(posAfterE.To3D(), 50, Color.Violet);
+            }
+
             foreach (Obj_SpellMissile mis in skillShots)
             {
                 Drawing.DrawCircle(mis.Position, 47, Color.Orange);
                 Drawing.DrawCircle(mis.EndPosition, 100, Color.BlueViolet);
                Drawing.DrawCircle(mis.SpellCaster.Position, Yasuo.Player.BoundingRadius + mis.SData.LineWidth, Color.DarkSalmon);
                 Drawing.DrawCircle(mis.StartPosition, 70, Color.Green);
-            }
+            }*/
 
         }
 
