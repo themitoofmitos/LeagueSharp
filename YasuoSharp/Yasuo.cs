@@ -252,7 +252,7 @@ namespace Yasuo_Sharpino
                     dmg *= 2;
                 if (!missle.SData.Name.Contains("Attack") || (enemHero.CombatType == GameObjectCombatType.Ranged && dmg > Player.MaxHealth / 8))
                 {
-                    if (YasMath.DistanceFromPointToLine(missle.SpellCaster.Position.To2D(), missle.EndPosition.To2D(), Yasuo.Player.ServerPosition.To2D()) < (Player.BoundingRadius + missle.BoundingRadius+20))
+                    if (YasMath.DistanceFromPointToLine(missle.SpellCaster.Position.To2D(), missle.EndPosition.To2D(), Yasuo.Player.ServerPosition.To2D()) < (Player.BoundingRadius + missle.SData.LineWidth))
                     {
                         Vector3 blockWhere = missle.Position;
                         if (Player.Distance(missle.Position) < 420)
