@@ -97,7 +97,8 @@ namespace RivenSharp
         {
             foreach (Obj_AI_Hero enHero in ObjectManager.Get<Obj_AI_Hero>().Where(enHero => enHero.IsEnemy && enHero.Health > 0))
             {
-                Drawing.DrawCircle(enHero.Position, enHero.BoundingRadius + Riven.E.Range+Riven.Player.AttackRange, Color.Blue);
+                Utility.DrawCircle(enHero.Position, enHero.BoundingRadius + Riven.E.Range + Riven.Player.AttackRange, Color.Blue);
+                //Drawing.DrawCircle(enHero.Position, enHero.BoundingRadius + Riven.E.Range+Riven.Player.AttackRange, Color.Blue);
             }
         }
 
