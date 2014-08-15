@@ -23,7 +23,7 @@ namespace KarmaSharp
         public static SpellDataInst Wdata = sBook.GetSpell(SpellSlot.W);
         public static SpellDataInst Edata = sBook.GetSpell(SpellSlot.E);
         public static SpellDataInst Rdata = sBook.GetSpell(SpellSlot.R);
-        public static Spell Q = new Spell(SpellSlot.Q, 950);
+        public static Spell Q = new Spell(SpellSlot.Q, 920);
         public static Spell W = new Spell(SpellSlot.W, 675);
         public static Spell E = new Spell(SpellSlot.E, 800);
         public static Spell R = new Spell(SpellSlot.R, 0);

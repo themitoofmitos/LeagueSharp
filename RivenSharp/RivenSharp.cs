@@ -26,7 +26,7 @@ namespace RivenSharp
     class RivenSharp
     {
 
-        public const string CharName = "Yasuo";
+        public const string CharName = "Riven";
 
         public static Menu Config;
 
@@ -34,6 +34,8 @@ namespace RivenSharp
 
         public RivenSharp()
         {
+            if (ObjectManager.Player.BaseSkinName != CharName)
+                return;
             /* CallBAcks */
             CustomEvents.Game.OnGameLoad += onLoad;
           

@@ -27,6 +27,8 @@ namespace KarmaSharp
 
         public KarmaSharp()
         {
+            if (ObjectManager.Player.BaseSkinName != CharName)
+                return;
             /* CallBAcks */
             CustomEvents.Game.OnGameLoad += onLoad;
 

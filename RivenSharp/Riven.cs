@@ -140,6 +140,7 @@ namespace RivenSharp
         {
             Console.WriteLine("Cansel anim");
             Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(Game.CursorPos.X, Game.CursorPos.Y)).Send();
+           //  Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(fill iterator up)).Send();
         }
 
     }

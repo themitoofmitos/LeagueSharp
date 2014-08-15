@@ -35,7 +35,6 @@ namespace Yasuo_Sharpino
         //Orbwalker
         public static Orbwalking.Orbwalker Orbwalker;
 
-        public static Obj_AI_Base target_db;
 
         public static Menu Config;
 
@@ -45,6 +44,9 @@ namespace Yasuo_Sharpino
 
         public YasuoSharp()
         {
+            if (ObjectManager.Player.BaseSkinName != CharName) 
+                return;
+
             map = new Map();
             /* CallBAcks */
             CustomEvents.Game.OnGameLoad += onLoad;
