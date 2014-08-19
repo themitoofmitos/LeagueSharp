@@ -4,6 +4,28 @@ Donate -> PayPal: dtk600@gmail.com
 LeagueSharp
 ===========
 
+JayceSharp
+===========
+
+Combo:
+ - Super fast QE 
+ - use all skills in bet way
+ - can toggle to go in hammer if killable with combo
+ - combo works both ways from and to hammer
+ - Can activate fullburst to use all skills
+
+Inj:
+ - will jump to target, flash behind, kick in tower and swap to range to burst down
+ - https://www.youtube.com/watch?v=S3kwExDKtH4&feature=youtu.be
+
+Extra:
+ - Kick Away gapclosers
+ - Use GhostBlade
+ - Use Muramana
+ - Manual QE cast
+
+
+
 HiddenObject
 ===========
 
@@ -14,6 +36,8 @@ It only will see if you saw that ward was placed.
 Add more hidden Objects at HidObjects.cs
 
 YasuoSharp
+===========
+
 Harass mode:
  - will hit q whenever possible
  - can choose only to use 3rd q
