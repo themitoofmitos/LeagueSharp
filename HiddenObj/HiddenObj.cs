@@ -6,6 +6,7 @@ using System.Reflection;
 using LeagueSharp;
 using LeagueSharp.Common;
 using System.Drawing;
+using SharpDX;
 
 namespace HiddenObj
 {
@@ -80,8 +81,8 @@ namespace HiddenObj
                     Utility.DrawCircle(lho.Position, 50, lho.ObjColor);
                     if (lho.Duration > 0)
                     {
-                        float[] locOnScreen = Drawing.WorldToScreen(lho.Position);
-                        Drawing.DrawText(locOnScreen[0] - 10, locOnScreen[1] - 10, lho.ObjColor, "" + (int)((lho.CreatedAt + lho.Duration + 1) - Game.Time));
+                        Vector2 locOnScreen = Drawing.WorldToScreen(lho.Position);
+                        Drawing.DrawText(locOnScreen.X - 10, locOnScreen.Y - 10, lho.ObjColor, "" + (int)((lho.CreatedAt + lho.Duration + 1) - Game.Time));
                     }
                 }
             }
