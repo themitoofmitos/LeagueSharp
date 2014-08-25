@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 using LeagueSharp;
@@ -61,9 +61,9 @@ namespace JayceSharp
 
         public static void setSkillShots()
         {
-            Q1.SetSkillshot(0.15f, 70f, 1500, true, Prediction.SkillshotType.SkillshotLine);
-            QEmp1.SetSkillshot(0.15f, 70f, 2550, true, Prediction.SkillshotType.SkillshotLine);
-           // QEmp1.SetSkillshot(0.25f, 70f, float.MaxValue, false, Prediction.SkillshotType.SkillshotLine);
+            Q1.SetSkillshot(0.15f, 70f, 1500, true, SkillshotType.SkillshotLine);
+            QEmp1.SetSkillshot(0.15f, 70f, 2550, true, SkillshotType.SkillshotLine);
+           // QEmp1.SetSkillshot(0.25f, 70f, float.MaxValue, false, SkillshotType.SkillshotLine);
         }
 
 
@@ -77,8 +77,8 @@ namespace JayceSharp
                 if (E1.IsReady() && Q1.IsReady() && gotManaFor(true, false, true))
                 {
 
-                    Prediction.PredictionOutput po = QEmp1.GetPrediction(target);
-                    if (po.HitChance == Prediction.HitChance.HighHitchance/* && Player.Distance(po.CastPosition) < (QEmp1.Range + target.BoundingRadius)*/)
+                    PredictionOutput po = QEmp1.GetPrediction(target);
+                    if (po.Hitchance == HitChance.High/* && Player.Distance(po.CastPosition) < (QEmp1.Range + target.BoundingRadius)*/)
                     {
                        // Vector3 bPos = Player.ServerPosition - (target.Position - Player.ServerPosition);
 
@@ -88,12 +88,12 @@ namespace JayceSharp
                         // QEmp1.Cast(po.CastPosition);
                     }
 
-                   // QEmp1.CastIfHitchanceEquals(target, Prediction.HitChance.HighHitchance);
+                   // QEmp1.CastIfHitchanceEquals(target, HitChance.High);
                 }
                 else if (Q1.IsReady() && gotManaFor(true))
                 {
-                    Prediction.PredictionOutput po = Q1.GetPrediction(target);
-                    if (po.HitChance >= Prediction.HitChance.LowHitchance/* && Player.Distance(po.CastPosition) < (Q1.Range + target.BoundingRadius)*/)
+                    PredictionOutput po = Q1.GetPrediction(target);
+                    if (po.Hitchance >= HitChance.Low/* && Player.Distance(po.CastPosition) < (Q1.Range + target.BoundingRadius)*/)
                     {
                         Q1.Cast(po.CastPosition);
                     }
@@ -141,16 +141,16 @@ namespace JayceSharp
                 //DO QE combo first
                 if (E1.IsReady() && Q1.IsReady() && gotManaFor(true, false, true))
                 {
-                    Prediction.PredictionOutput po = QEmp1.GetPrediction(target);
-                    if (po.HitChance >= Prediction.HitChance.LowHitchance && Player.Distance(po.Position) < (QEmp1.Range + target.BoundingRadius))
+                    PredictionOutput po = QEmp1.GetPrediction(target);
+                    if (po.Hitchance >= HitChance.Low && Player.Distance(po.CastPosition) < (QEmp1.Range + target.BoundingRadius))
                     {
                         castQon = po.CastPosition;
                     }
                 }
                 else if (Q1.IsReady() && gotManaFor(true))
                 {
-                    Prediction.PredictionOutput po = Q1.GetPrediction(target);
-                    if (po.HitChance >= Prediction.HitChance.LowHitchance && Player.Distance(po.Position) < (Q1.Range + target.BoundingRadius))
+                    PredictionOutput po = Q1.GetPrediction(target);
+                    if (po.Hitchance >= HitChance.Low && Player.Distance(po.CastPosition) < (Q1.Range + target.BoundingRadius))
                     {
                         Q1.Cast(po.CastPosition);
                     }
@@ -218,13 +218,13 @@ namespace JayceSharp
             {
                 if (E1.IsReady() && Q1.IsReady() && gotManaFor(true, false, true))
                 {
-                    Prediction.PredictionOutput po = QEmp1.GetPrediction(target);
-                    if (po.HitChance >= Prediction.HitChance.LowHitchance && Player.Distance(po.Position) < (QEmp1.Range + target.BoundingRadius))
+                    PredictionOutput po = QEmp1.GetPrediction(target);
+                    if (po.Hitchance >= HitChance.Low && Player.Distance(po.CastPosition) < (QEmp1.Range + target.BoundingRadius))
                     {
                         castQon = po.CastPosition;
                     }
 
-                    // QEmp1.CastIfHitchanceEquals(target, Prediction.HitChance.HighHitchance);
+                    // QEmp1.CastIfHitchanceEquals(target, HitChance.High);
                 }
                 else if (Q1.IsReady() && gotManaFor(true))
                 {
