@@ -78,10 +78,12 @@ namespace Yasuo_Sharpino
 
                 if (YasuoSharp.Config.Item("useQlh").GetValue<bool>() && !isQEmpovered() && minion.Health < DamageLib.getDmg(minion, DamageLib.SpellType.Q))
                     if (!(target != null && isQEmpovered() && Player.Distance(target) < 1050))
-                        if(canCastFarQ())
-                            Q.CastIfWillHit(minion,1, false);
+                    {
+                        if (canCastFarQ())
+                            Q.Cast(minion);
                         else
-                            QCir.CastIfWillHit(minion, 1, false);
+                            QCir.CastIfHitchanceEquals(minion, HitChance.High);
+                    }
             }
         }
 
@@ -260,11 +262,14 @@ namespace Yasuo_Sharpino
             }
             else if (!onlyEmp)
             {
-                if (canCastFarQ() &&  Q.CastIfWillHit(target, 1))
+                if (canCastFarQ() )
                 {
-                    Console.WriteLine("Cast q champ");
-                   // Console.WriteLine("test QQ");
-                   
+                    PredictionOutput po = Q.GetPrediction(target);
+                    if (po.Hitchance == HitChance.High)
+                        Q.Cast(po.CastPosition);
+                    //Console.WriteLine("Cast q champ");
+                    // Console.WriteLine("test QQ");
+
                 }
                 else//dashing
                 {

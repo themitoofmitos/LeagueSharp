@@ -19,6 +19,8 @@ using System.Drawing;
  * Overkill minions too
  * 
  * 
+ * add smart minion health pred
+ * 
  * 
  * 
  * */
@@ -177,8 +179,9 @@ namespace Yasuo_Sharpino
         private static void onDraw(EventArgs args)
         {
             if (Config.Item("disDraw").GetValue<bool>())
-                return; 
-            Drawing.DrawCircle(Yasuo.Player.Position, 475, Color.Blue);
+                return;
+            Utility.DrawCircle(Yasuo.Player.Position, 475, Color.Blue);
+            Utility.DrawCircle(Yasuo.Player.Position, 1200, Color.Blue);
 
          /*   if ((int)NavMesh.GetCollisionFlags(Game.CursorPos) == 2 || (int)NavMesh.GetCollisionFlags(Game.CursorPos) == 64)
                 Drawing.DrawCircle(Game.CursorPos, 70, Color.Green);
@@ -246,9 +249,9 @@ namespace Yasuo_Sharpino
                 if (!Config.Item("autoLevel").GetValue<bool>())
                     return;
                 if (Config.Item("levUpSeq").GetValue<StringList>().SelectedIndex == 0)
-                    Utility.LevelUpSpell(Yasuo.sBook, Yasuo.levelUpSeq[args.NewLevel-1].Slot);
+                    Yasuo.sBook.LevelUpSpell(Yasuo.levelUpSeq[args.NewLevel-1].Slot);
                 else if (Config.Item("levUpSeq").GetValue<StringList>().SelectedIndex == 1)
-                    Utility.LevelUpSpell(Yasuo.sBook, Yasuo.levelUpSeq2[args.NewLevel - 1].Slot);
+                    Yasuo.sBook.LevelUpSpell(Yasuo.levelUpSeq2[args.NewLevel - 1].Slot);
             }
         }
 
