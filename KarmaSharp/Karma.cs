@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,7 +30,7 @@ namespace KarmaSharp
 
         public static void setSkillShots()
         {
-            Q.SetSkillshot(0.5f, 90f, 1800f, true, Prediction.SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.5f, 90f, 1800f, true, SkillshotType.SkillshotLine);
         }
 
 
@@ -56,8 +56,8 @@ namespace KarmaSharp
                 Q.Range += 210;
             if (!Q.IsReady())
                 return;
-            Prediction.PredictionOutput predict = Q.GetPrediction(target);
-            if (predict.HitChance == Prediction.HitChance.Collision )
+            PredictionOutput predict = Q.GetPrediction(target);
+            if (predict.Hitchance == HitChance.Collision )
             {
                 if (KarmaSharp.Config.Item("useMinions").GetValue<bool>())
                 {
@@ -74,8 +74,8 @@ namespace KarmaSharp
                    
                      */
 
-                    Obj_AI_Base fistCol = predict.CollisionUnitsList.OrderBy(unit => unit.Distance(Player.ServerPosition)).First();
-                    if (fistCol.Distance(predict.Position) < (180 - fistCol.BoundingRadius / 2) && fistCol.Distance(target.ServerPosition) < (200 - fistCol.BoundingRadius / 2))
+                    Obj_AI_Base fistCol = predict.CollisionObjects.OrderBy(unit => unit.Distance(Player.ServerPosition)).First();
+                    if (fistCol.Distance(predict.CastPosition) < (180 - fistCol.BoundingRadius / 2) && fistCol.Distance(target.ServerPosition) < (200 - fistCol.BoundingRadius / 2))
                     {
                         // Console.WriteLine("Casted in minions");
                         useRSmart();
@@ -84,7 +84,7 @@ namespace KarmaSharp
                     }
                 }
             }
-            else if(predict.HitChance != Prediction.HitChance.CantHit && predict.CollisionUnitsList.Count == 0)
+            else if(predict.Hitchance != HitChance.Impossible && predict.CollisionObjects.Count == 0)
             {
                // Console.WriteLine("Casted " + predict.HitChance);
                 useRSmart(); 
@@ -124,7 +124,7 @@ namespace KarmaSharp
         public static List<Vector2> entitiesAroundTarget(Obj_AI_Hero target)
         {
             List<Obj_AI_Base> minionsAround = MinionManager.GetMinions(target.ServerPosition, 450, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.None);
-            List<Vector2> entities = MinionManager.GetMinionsPredictedPositions(minionsAround, 0.5f, 90f, 1800f, Player.ServerPosition, 250, true, Prediction.SkillshotType.SkillshotLine, target.ServerPosition);
+            List<Vector2> entities = MinionManager.GetMinionsPredictedPositions(minionsAround, 0.5f, 90f, 1800f, Player.ServerPosition, 250, true, SkillshotType.SkillshotLine, target.ServerPosition);
             return entities;
         }
 
