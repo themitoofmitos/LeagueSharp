@@ -45,7 +45,7 @@ namespace TryndSharp
 
         public static void setSkillShots()
         {
-            E.SetSkillshot(0.5f, 225f, 700f, false, Prediction.SkillshotType.SkillshotLine);
+            E.SetSkillshot(0.5f, 225f, 700f, false, SkillshotType.SkillshotLine);
         }
 
         public static void useQSmart()
@@ -113,7 +113,7 @@ namespace TryndSharp
             {
                 if (timeToReach > 1.7f || timeToReach < 0.0f)
                 {
-                    E.Cast(E.GetPrediction(target).CastPosition);
+                    E.Cast(target);
                 }
             }
 
