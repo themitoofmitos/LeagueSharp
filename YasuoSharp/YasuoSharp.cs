@@ -44,6 +44,8 @@ namespace Yasuo_Sharpino
 
         public static string lastSpell = "";
 
+        public static int afterDash = 0;
+
         public YasuoSharp()
         {
             if (ObjectManager.Player.BaseSkinName != CharName) 
@@ -122,6 +124,7 @@ namespace Yasuo_Sharpino
                 GameObject.OnDelete += OnDeleteObject;
                 Obj_AI_Base.OnProcessSpellCast += OnProcessSpell;
                 CustomEvents.Unit.OnLevelUp += OnLevelUp;
+
             }
             catch
             {
@@ -136,6 +139,13 @@ namespace Yasuo_Sharpino
             {
                 Obj_AI_Hero target = SimpleTs.GetTarget(1250, SimpleTs.DamageType.Physical);
                 Yasuo.doCombo(target);
+            }
+
+            if (Orbwalker.ActiveMode.ToString() == "LastHit")
+            {
+                Obj_AI_Hero target = SimpleTs.GetTarget(1250, SimpleTs.DamageType.Physical);
+                Yasuo.doLastHit(target);
+                Yasuo.useQSmart(target);
             }
 
             if (Orbwalker.ActiveMode.ToString() == "Mixed")
@@ -153,6 +163,7 @@ namespace Yasuo_Sharpino
 
             if (Config.Item("flee").GetValue<KeyBind>().Active)
             {
+                Yasuo.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 Yasuo.gapCloseE(Game.CursorPos.To2D());
             }
 

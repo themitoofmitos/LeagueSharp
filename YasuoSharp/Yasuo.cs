@@ -52,7 +52,7 @@ namespace Yasuo_Sharpino
         {
             if (target == null) return;
 
-            if (YasuoSharp.Config.Item("smartR").GetValue<bool>())
+            if (YasuoSharp.Config.Item("smartR").GetValue<bool>() && R.IsReady())
                 useRSmart();
             
             if (!useESmart(target))
@@ -101,7 +101,7 @@ namespace Yasuo_Sharpino
                         MinionManager.FarmLocation farm = QEmp.GetLineFarmLocation(minionPs); //MinionManager.GetBestLineFarmLocation(minionPs, 50f, 900f);
                         if (farm.MinionsHit >= YasuoSharp.Config.Item("useEmpQHit").GetValue<Slider>().Value)
                         {
-                            Console.WriteLine("Cast q simp Emp");
+                           // Console.WriteLine("Cast q simp Emp");
                             QEmp.Cast(farm.Position, false);
                             return;
                         }
@@ -122,7 +122,7 @@ namespace Yasuo_Sharpino
                         Vector2 clos = Geometry.Closest(Player.ServerPosition.To2D(), minionPs);
                         if (Player.Distance(clos) < 475)
                         {
-                            Console.WriteLine("Cast q simp");
+                           // Console.WriteLine("Cast q simp");
                             Q.Cast(clos, false);
                             return;
                         }
@@ -134,7 +134,7 @@ namespace Yasuo_Sharpino
                         if (farm.MinionsHit > 2)
                         {
                             QCir.Cast(farm.Position, false);
-                            Console.WriteLine("Cast q circ simp");
+                           // Console.WriteLine("Cast q circ simp");
                             return;
                         }
                     }
@@ -144,7 +144,7 @@ namespace Yasuo_Sharpino
                 foreach (var minion in minions.Where(minion => minion.IsValidTarget(Q.Range)))
                 {
                     if (minion.Health < DamageLib.getDmg(minion, DamageLib.SpellType.E) 
-                        ||( (minion.Health < (DamageLib.getDmg(minion, DamageLib.SpellType.E) + DamageLib.getDmg(minion, DamageLib.SpellType.Q)-40)) 
+                        ||( (minion.Health < (DamageLib.getDmg(minion, DamageLib.SpellType.E) + DamageLib.getDmg(minion, DamageLib.SpellType.AD)-40)) 
                         && (minion.Health > (DamageLib.getDmg(minion, DamageLib.SpellType.E) + 80))))
                     {
                         useENormal(minion);
@@ -296,12 +296,12 @@ namespace Yasuo_Sharpino
                     dmg *= 2;
                 if (!missle.SData.Name.Contains("Attack") || (enemHero.CombatType == GameObjectCombatType.Ranged && dmg > Player.MaxHealth / 8))
                 {
-                    if (YasMath.DistanceFromPointToLine(missle.SpellCaster.Position.To2D(), missle.EndPosition.To2D(), Yasuo.Player.ServerPosition.To2D()) < (Player.BoundingRadius + missle.SData.LineWidth))
+                    if (missle.Target.IsMe || (YasMath.DistanceFromPointToLine(missle.SpellCaster.Position.To2D(), missle.EndPosition.To2D(), Yasuo.Player.ServerPosition.To2D()) < (Player.BoundingRadius + missle.SData.LineWidth)))
                     {
                         Vector3 blockWhere = missle.Position;//Player.ServerPosition + Vector3.Normalize(missle.Position - Player.ServerPosition)*30; // missle.Position; 
                         if (Player.Distance(missle.Position) < 420)
                         {
-                            if (isMissileCommingAtMe(missle))
+                            if (missle.Target.IsMe || isMissileCommingAtMe(missle))
                             {
                                 Console.WriteLine(missle.BoundingRadius);
                                 Console.WriteLine(missle.SData.LineWidth);
@@ -363,6 +363,7 @@ namespace Yasuo_Sharpino
         {
             if (!E.IsReady())
                 return;
+
            // Console.WriteLine("gapcloseer?");
            //Player.IssueOrder(GameObjectOrder.MoveTo, pos.To3D());
             Vector2 pPos = Player.ServerPosition.To2D();
