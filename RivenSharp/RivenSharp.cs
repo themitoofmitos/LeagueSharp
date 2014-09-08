@@ -14,9 +14,11 @@ using System.Drawing;
  * Farming
  * Interupt
  * 
+ * gap close with q
  * 
+ * mash q if les hp
  * 
- * 
+ * smart cancel combos
  * 
  * 
  */
@@ -180,15 +182,24 @@ namespace RivenSharp
         {
             try
             {
+                if (args.PacketData[0] == 119)
+                    args.Process = false;
+
                 //if (Riven.orbwalker.ActiveMode.ToString() == "Combo")
                  //   LogPacket(args);
                 if (args.PacketData[0]==154 && Riven.orbwalker.ActiveMode.ToString() == "Combo")
                 {
                     Packet.C2S.Cast.Struct cast = Packet.C2S.Cast.Decoded(args.PacketData);
-                    if ((int)cast.Slot > -1 && (int)cast.Slot < 5)
+                    if ((int)cast.Slot > -1 && (int)cast.Slot < 5 )
                         Utility.DelayAction.Add(Game.Ping, delegate { Riven.cancelAnim(); });
-                    Console.WriteLine(cast.Slot + " : " + Game.Ping);
-                    if (cast.Slot == SpellSlot.Q)
+
+                    if (cast.Slot == SpellSlot.E && Riven.R.IsReady())
+                    {
+                        Console.WriteLine("cast QQQQ");
+                        Utility.DelayAction.Add(Game.Ping + 100, delegate { Riven.useRSmart(Riven.orbwalker.GetTarget()); });
+                    }
+                    //Console.WriteLine(cast.Slot + " : " + Game.Ping);
+                   /* if (cast.Slot == SpellSlot.Q)
                         Orbwalking.ResetAutoAttackTimer();
                     else if (cast.Slot == SpellSlot.W && Riven.Q.IsReady())
                         Utility.DelayAction.Add(Game.Ping+200, delegate { Riven.useHydra(Riven.orbwalker.GetTarget()); });
@@ -201,7 +212,7 @@ namespace RivenSharp
                     {
                         Orbwalking.ResetAutoAttackTimer();
                         Utility.DelayAction.Add(Game.Ping +200, delegate { Riven.useWSmart(Riven.orbwalker.GetTarget()); });
-                    }
+                    }*/
                         // LogPacket(args);
                 }
             }

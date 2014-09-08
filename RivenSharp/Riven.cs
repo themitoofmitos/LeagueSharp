@@ -31,12 +31,18 @@ namespace RivenSharp
         public static Spell E = new Spell(SpellSlot.E, 390);
         public static Spell R = new Spell(SpellSlot.R, 900);
 
+        public static void setSkillshots()
+        {
+            R.SetSkillshot(0.25f, 300f, 120f, false, SkillshotType.SkillshotCone);
+        }
+
+
         public static void doCombo(Obj_AI_Base target)
         {
             useESmart(target);
             useWSmart(target,true);
-            useHydra(target);
             useRSmart((Obj_AI_Hero)target);
+            useHydra(target);
         }
 
 
@@ -51,7 +57,7 @@ namespace RivenSharp
             }
         }
 
-        public static void useWSmart(Obj_AI_Base target, bool aaRange =false)
+        public static  void useWSmart(Obj_AI_Base target, bool aaRange =false)
         {
             float range = 0;
             if (aaRange)
@@ -78,22 +84,33 @@ namespace RivenSharp
                     E.Cast(target.ServerPosition);
             }
         }
-        public static void useRSmart(Obj_AI_Hero target)
-        {
-            if (target.Distance(Player.ServerPosition) > (Player.AttackRange + target.BoundingRadius) + 20)
-                if (DamageLib.getDmg(target, DamageLib.SpellType.R) > (target.Health - 5 * target.Level) && R.IsReady())
-                    R.Cast(target.ServerPosition);
+        public static void useRSmart(Obj_AI_Base target)
+        {   
+            if (!Player.HasBuff("RivenFengShuiEngine") && !E.IsReady())
+                R.Cast();
+            else if (target is Obj_AI_Hero)
+            {
+                Game.PrintChat("shield?: "+target.ScriptHealthBonus);
+                var targ = target as Obj_AI_Hero;
+                PredictionOutput po = R.GetPrediction(targ, true);
+                if (po.Hitchance == HitChance.High)
+                    if (DamageLib.getDmg(target, DamageLib.SpellType.R) > ((targ.Health + target.ScriptHealthBonus)) && R.IsReady())
+                        R.Cast(po.CastPosition);
+            }
+           
         }
 
 
-        public static void useHydra(Obj_AI_Base target)
+        public static bool useHydra(Obj_AI_Base target)
         {
-            Console.WriteLine("Hydar da useee");
+           // Console.WriteLine("Hydar da useee");
             if (target.Distance(Player.ServerPosition) < (400 + target.BoundingRadius-20))
             {
                 Items.UseItem(3074, target);
                  Items.UseItem(3077, target);
+                return true;
             }
+            return false;
         }
 
         public static Vector3 difPos()
@@ -138,8 +155,21 @@ namespace RivenSharp
 
         public static void cancelAnim()
         {
+            Orbwalking.ResetAutoAttackTimer();
             Console.WriteLine("Cansel anim");
-            Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(Game.CursorPos.X, Game.CursorPos.Y)).Send();
+            if (!Riven.useHydra(Riven.orbwalker.GetTarget()))
+            {
+                if (W.IsReady())
+                    Riven.useWSmart(Riven.orbwalker.GetTarget());
+                else
+                {
+                    Game.Say("/l");
+                    Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(Game.CursorPos.X, Game.CursorPos.Y)).Send();
+                }
+                   
+            }
+
+
            //  Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(fill iterator up)).Send();
         }
 
