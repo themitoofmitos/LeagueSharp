@@ -53,15 +53,11 @@ namespace JayceSharp
                 Config.SubMenu("combo").AddItem(new MenuItem("fullDMG", "Do full damage")).SetValue(new KeyBind('A', KeyBindType.Press));
                 Config.SubMenu("combo").AddItem(new MenuItem("injTarget", "Tower Injection")).SetValue(new KeyBind('G', KeyBindType.Press));
 
-                //LastHit
-                Config.AddSubMenu(new Menu("LastHit Sharp", "lHit"));
 
-                //LaneClear
-                Config.AddSubMenu(new Menu("LaneClear Sharp", "lClear"));
-
-                //Harass
-                Config.AddSubMenu(new Menu("Harass Sharp", "harass"));
-
+                //Extra
+                Config.AddSubMenu(new Menu("Drawing Sharp", "drawing"));
+                Config.SubMenu("drawing").AddItem(new MenuItem("drawStuff", "Draw on/off")).SetValue(true);
+               
                 //Extra
                 Config.AddSubMenu(new Menu("Extra Sharp", "extra"));
                 Config.SubMenu("extra").AddItem(new MenuItem("shoot", "Shoot manual Q")).SetValue(new KeyBind('T', KeyBindType.Press));
@@ -152,7 +148,8 @@ namespace JayceSharp
 
         private static void onDraw(EventArgs args)
         {
-
+            if (!Config.Item("drawStuff").GetValue<bool>())
+                return;
             //Obj_AI_Hero target = SimpleTs.GetTarget(1500, SimpleTs.DamageType.Physical);
 
           //  Utility.DrawCircle(Jayce.getBestPosToHammer(target), 70, Color.LawnGreen);

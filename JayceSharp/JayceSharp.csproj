@@ -32,33 +32,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="clipper_library, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Assemblies\System\clipper_library.dll</HintPath>
+    <Reference Include="clipper_library">
+      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\clipper_library.dll</HintPath>
     </Reference>
-    <Reference Include="LeagueSharp, Version=1.0.0.25, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Assemblies\System\LeagueSharp.dll</HintPath>
+    <Reference Include="LeagueSharp">
+      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\LeagueSharp.dll</HintPath>
     </Reference>
-    <Reference Include="LeagueSharp.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Assemblies\System\LeagueSharp.Common.dll</HintPath>
+    <Reference Include="LeagueSharp.Common">
+      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Assemblies\System\SharpDX.dll</HintPath>
+    <Reference Include="SharpDX">
+      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D9, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Assemblies\System\SharpDX.Direct3D9.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Toolkit, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Assemblies\System\SharpDX.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Toolkit.Graphics, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Assemblies\System\SharpDX.Toolkit.Graphics.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D9">
+      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
