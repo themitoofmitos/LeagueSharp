@@ -66,7 +66,7 @@ namespace Yasuo_Sharpino
             try
             {
 
-                Config = new Menu("Yasuo - SharpSwrod", "Yasuo", true);
+                Config = new Menu("Yasuo - Sharp by DeTuKs Donate if you love my assams :)", "Yasuo", true);
                 //Orbwalker
                 Config.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
                 Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalker"));
@@ -114,7 +114,11 @@ namespace Yasuo_Sharpino
                 //Debug
                 Config.AddSubMenu(new Menu("Debug", "debug"));
                 Config.SubMenu("debug").AddItem(new MenuItem("WWLast", "Print last ww blocked")).SetValue(new KeyBind('T', KeyBindType.Press, false));
-
+				//Donate
+                Config.AddSubMenu(new Menu("Donate", "Donate"));
+                Config.SubMenu("debug").AddItem(new MenuItem("domateMe", "PayPal:")).SetValue(true);
+                Config.SubMenu("debug").AddItem(new MenuItem("domateMe2", "dtk600@gmail.com")).SetValue(true);
+                Config.SubMenu("debug").AddItem(new MenuItem("domateMe3", "Tnx ^.^")).SetValue(true);
             
                 Config.AddToMainMenu();
                 Drawing.OnDraw += onDraw;

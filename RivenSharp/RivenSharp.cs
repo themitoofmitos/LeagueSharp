@@ -45,7 +45,7 @@ namespace RivenSharp
 
         private static void onLoad(EventArgs args)
         {
-            Game.PrintChat("RivenSharp by DeTuKs");
+            Game.PrintChat("RivenSharp by DeTuKs Donate if you love my assams :)");
             Config = new Menu("Riven - Sharp", "Riven", true);
             //Orbwalker
             Config.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
@@ -61,6 +61,12 @@ namespace RivenSharp
             //Debug
             Config.AddSubMenu(new Menu("Debug", "debug"));
             Config.SubMenu("debug").AddItem(new MenuItem("db_targ", "Debug Target")).SetValue(new KeyBind('T', KeyBindType.Press, false));
+			
+			//Donate
+			Config.AddSubMenu(new Menu("Donate", "Donate"));
+			Config.SubMenu("debug").AddItem(new MenuItem("domateMe", "PayPal:")).SetValue(true);
+			Config.SubMenu("debug").AddItem(new MenuItem("domateMe2", "dtk600@gmail.com")).SetValue(true);
+			Config.SubMenu("debug").AddItem(new MenuItem("domateMe3", "Tnx ^.^")).SetValue(true);
 
             Config.AddToMainMenu();
 

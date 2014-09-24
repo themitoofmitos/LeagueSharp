@@ -34,7 +34,7 @@ namespace JayceSharp
         private static void onLoad(EventArgs args)
         {
 
-            Game.PrintChat("Jayce - Sharp by DeTuKs");
+            Game.PrintChat("Jayce - Sharp by DeTuKs DOnate if you love my assams :)");
             Jayce.setSkillShots();
             try
             {
@@ -65,6 +65,11 @@ namespace JayceSharp
                 //Debug
                 Config.AddSubMenu(new Menu("Debug", "debug"));
                 Config.SubMenu("debug").AddItem(new MenuItem("db_targ", "Debug Target")).SetValue(new KeyBind('N', KeyBindType.Press));
+                //Donate
+                Config.AddSubMenu(new Menu("Donate", "Donate"));
+                Config.SubMenu("debug").AddItem(new MenuItem("domateMe", "PayPal:")).SetValue(true);
+                Config.SubMenu("debug").AddItem(new MenuItem("domateMe2", "dtk600@gmail.com")).SetValue(true);
+                Config.SubMenu("debug").AddItem(new MenuItem("domateMe3", "Tnx ^.^")).SetValue(true);
 
 
                 Config.AddToMainMenu();

@@ -42,7 +42,7 @@ namespace KarmaSharp
             try
             {
 
-                Config = new Menu("Karma - SharpSwrod", "Karma", true);
+                Config = new Menu("Karma - Sharp by DeTuKs Donate if you love my assams :)", "Karma", true);
                 //Orbwalker
                 Config.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
                 Karma.orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalker"));
@@ -71,6 +71,11 @@ namespace KarmaSharp
                 //Extra
                 Config.AddSubMenu(new Menu("Extra Sharp", "extra"));
                 Config.SubMenu("extra").AddItem(new MenuItem("useMinions", "Use minions on Q")).SetValue(true);
+				//Donate
+                Config.AddSubMenu(new Menu("Donate", "Donate"));
+                Config.SubMenu("debug").AddItem(new MenuItem("domateMe", "PayPal:")).SetValue(true);
+                Config.SubMenu("debug").AddItem(new MenuItem("domateMe2", "dtk600@gmail.com")).SetValue(true);
+                Config.SubMenu("debug").AddItem(new MenuItem("domateMe3", "Tnx ^.^")).SetValue(true);
 
                 //Debug
               //  Config.AddSubMenu(new Menu("Debug", "debug"));

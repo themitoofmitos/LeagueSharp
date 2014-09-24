@@ -61,8 +61,8 @@ namespace JayceSharp
 
         public static void setSkillShots()
         {
-            Q1.SetSkillshot(0.15f, 70f, 1500, true, SkillshotType.SkillshotLine);
-            QEmp1.SetSkillshot(0.15f, 70f, 2550, true, SkillshotType.SkillshotLine);
+            Q1.SetSkillshot(0.15f, 70f, 1100, true, SkillshotType.SkillshotLine);
+            QEmp1.SetSkillshot(0.15f, 70f, 2050, true, SkillshotType.SkillshotLine);
            // QEmp1.SetSkillshot(0.25f, 70f, float.MaxValue, false, SkillshotType.SkillshotLine);
         }
 
