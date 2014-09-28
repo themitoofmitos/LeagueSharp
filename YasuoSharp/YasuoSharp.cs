@@ -19,7 +19,11 @@ using System.Drawing;
  * Overkill minions too
  * 
  * 
+ * auto R on killables
+ * 
  * add smart minion health pred
+ * 
+ * R when enemy is almost on ground<-- done
  * 
  * 
  * 
@@ -66,7 +70,7 @@ namespace Yasuo_Sharpino
             try
             {
 
-                Config = new Menu("Yasuo - Sharp by DeTuKs Donate if you love my assams :)", "Yasuo", true);
+                Config = new Menu("Yasuo - SharpSwrod", "Yasuo", true);
                 //Orbwalker
                 Config.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
                 Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalker"));
@@ -82,6 +86,11 @@ namespace Yasuo_Sharpino
                 //SmartR
                 Config.SubMenu("combo").AddItem(new MenuItem("smartR", "Smart R")).SetValue(true);
                 Config.SubMenu("combo").AddItem(new MenuItem("useRHit", "Use R if hit")).SetValue(new Slider(3, 5, 1));
+                Config.SubMenu("combo").AddItem(new MenuItem("useRHitTime", "Use R when they land")).SetValue(true);
+
+
+
+                Config.SubMenu("combo").AddItem(new MenuItem("useEWall", "use E to safe")).SetValue(true);
                 //Flee away
                 Config.SubMenu("combo").AddItem(new MenuItem("flee", "E away")).SetValue(new KeyBind('X', KeyBindType.Press, false));
 
@@ -114,11 +123,7 @@ namespace Yasuo_Sharpino
                 //Debug
                 Config.AddSubMenu(new Menu("Debug", "debug"));
                 Config.SubMenu("debug").AddItem(new MenuItem("WWLast", "Print last ww blocked")).SetValue(new KeyBind('T', KeyBindType.Press, false));
-				//Donate
-                Config.AddSubMenu(new Menu("Donate", "Donate"));
-                Config.SubMenu("debug").AddItem(new MenuItem("domateMe", "PayPal:")).SetValue(true);
-                Config.SubMenu("debug").AddItem(new MenuItem("domateMe2", "dtk600@gmail.com")).SetValue(true);
-                Config.SubMenu("debug").AddItem(new MenuItem("domateMe3", "Tnx ^.^")).SetValue(true);
+
             
                 Config.AddToMainMenu();
                 Drawing.OnDraw += onDraw;
@@ -129,6 +134,9 @@ namespace Yasuo_Sharpino
                 Obj_AI_Base.OnProcessSpellCast += OnProcessSpell;
                 CustomEvents.Unit.OnLevelUp += OnLevelUp;
 
+                Game.OnGameSendPacket += OnGameSendPacket;
+                Game.OnGameProcessPacket += OnGameProcessPacket;
+
             }
             catch
             {
@@ -136,6 +144,8 @@ namespace Yasuo_Sharpino
             }
 
         }
+
+       
 
         private static void OnGameUpdate(EventArgs args)
         {
@@ -195,6 +205,8 @@ namespace Yasuo_Sharpino
         {
             if (Config.Item("disDraw").GetValue<bool>())
                 return;
+
+
             Utility.DrawCircle(Yasuo.Player.Position, 475, Color.Blue);
             Utility.DrawCircle(Yasuo.Player.Position, 1200, Color.Blue);
 
@@ -215,21 +227,41 @@ namespace Yasuo_Sharpino
                  SharpDX.Vector2 posAfterE = jun.ServerPosition.To2D() + (SharpDX.Vector2.Normalize(proj - jun.ServerPosition.To2D() ) * 475);
                  Drawing.DrawCircle(posAfterE.To3D(), 50, Color.Violet);
             }
-
+            
             foreach (Obj_SpellMissile mis in skillShots)
             {
                 Drawing.DrawCircle(mis.Position, 47, Color.Orange);
-                Drawing.DrawCircle(mis.EndPosition, 100, Color.BlueViolet);
-               Drawing.DrawCircle(mis.SpellCaster.Position, Yasuo.Player.BoundingRadius + mis.SData.LineWidth, Color.DarkSalmon);
-                Drawing.DrawCircle(mis.StartPosition, 70, Color.Green);
+                //Drawing.DrawCircle(mis.EndPosition, 100, Color.BlueViolet);
+               //Drawing.DrawCircle(mis.SpellCaster.Position, Yasuo.Player.BoundingRadius + mis.SData.LineWidth, Color.DarkSalmon);
+                //Drawing.DrawCircle(mis.StartPosition, 70, Color.Green);
             }*/
 
         }
-
+        /*
+         * 
+         * 
+         */
         private static void OnCreateObject(GameObject sender, EventArgs args)
         {
+            //wall
+            if (sender is Obj_SpellLineMissile)
+            {
+                Obj_SpellLineMissile missle = (Obj_SpellLineMissile)sender;
+                if (missle.SData.Name == "yasuowmovingwallmisl")
+                {
+                    Yasuo.wall.setL(missle);
+                }
+
+                if (missle.SData.Name == "yasuowmovingwallmisr")
+                {
+                    Yasuo.wall.setR(missle);
+
+                }
+                Console.WriteLine(missle.SData.Name);
+            }
             if (sender is Obj_SpellMissile && sender.IsEnemy)
             {
+                
                 Obj_SpellMissile missle = (Obj_SpellMissile)sender;
                // if(Yasuo.WIgnore.Contains(missle.SData.Name))
                //     return;
@@ -239,6 +271,7 @@ namespace Yasuo_Sharpino
 
         private static void OnDeleteObject(GameObject sender, EventArgs args)
         {
+
             int i = 0;
             foreach (var lho in skillShots)
             {
@@ -251,10 +284,17 @@ namespace Yasuo_Sharpino
             }
         }
 
-        public static void OnProcessSpell(LeagueSharp.Obj_AI_Base obj, LeagueSharp.GameObjectProcessSpellCastEventArgs arg)
+        public static void OnProcessSpell(Obj_AI_Base obj, GameObjectProcessSpellCastEventArgs arg)
         {
-            if (obj.Name.Contains("Turret") || obj.Name.Contains("Minion"))
-                return;
+            if (obj.IsMe)
+            {
+                if (arg.SData.Name == "YasuoDashWrapper")//start dash
+                {
+                    Yasuo.isDashigPro = true;
+                    Yasuo.castFrom = Yasuo.Player.Position;
+                    Yasuo.startDash = Game.Time;
+                }
+            }
         }
 
         public static void OnLevelUp(LeagueSharp.Obj_AI_Base sender, LeagueSharp.Common.CustomEvents.Unit.OnLevelUpEventArgs args)
@@ -268,6 +308,39 @@ namespace Yasuo_Sharpino
                 else if (Config.Item("levUpSeq").GetValue<StringList>().SelectedIndex == 1)
                     Yasuo.sBook.LevelUpSpell(Yasuo.levelUpSeq2[args.NewLevel - 1].Slot);
             }
+        }
+
+       
+
+        private static void OnGameProcessPacket(GamePacketEventArgs args)
+        {//28 16 176 ??184
+            if (args.PacketData[0] == 41)//135no 100no 183no 34no 101 133 56yesss? 127 41yess
+            {
+                GamePacket gp = new GamePacket(args.PacketData);
+
+                gp.Position = 1;
+                if (gp.ReadInteger() == Yasuo.Player.NetworkId)
+                {
+                    Yasuo.isDashigPro = false;
+                    Yasuo.time = Game.Time - Yasuo.startDash;
+                }
+               /* for (int i = 1; i < gp.Size() - 4; i++)
+                {
+                    gp.Position = i;
+                    if (gp.ReadInteger() == Yasuo.Player.NetworkId)
+                    {
+                        Console.WriteLine("Found: "+i);
+                    }
+                }
+
+                Console.WriteLine("End dash");
+                Yasuo.Q.Cast(Yasuo.Player.Position);*/
+            }
+        }
+
+        private static void OnGameSendPacket(GamePacketEventArgs args)
+        {
+
         }
 
 
