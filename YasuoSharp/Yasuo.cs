@@ -159,6 +159,22 @@ namespace Yasuo_Sharpino
             dashes.Add(new YasDash(new Vector3(10695.00f, 7263.00f, 55.35f), new Vector3(10577.00f, 6803.00f, 54.87f)));
             dashes.Add(new YasDash(new Vector3(7411.00f, 9301.00f, 55.46f), new Vector3(7003.00f, 8827.00f, 56.02f)));
             dashes.Add(new YasDash(new Vector3(7535.00f, 9207.00f, 55.51f), new Vector3(7987.00f, 9637.00f, 53.53f)));
+            dashes.Add(new YasDash(new Vector3(7923.00f, 9409.00f, 53.53f), new Vector3(7491.00f, 9207.00f, 55.51f)));
+            dashes.Add(new YasDash(new Vector3(6197.00f, 11513.00f, 54.63f), new Vector3(6135.00f, 11983.00f, 39.60f)));
+            dashes.Add(new YasDash(new Vector3(6561.00f, 10737.00f, 54.64f), new Vector3(6083.00f, 11137.00f, 54.36f)));
+            dashes.Add(new YasDash(new Vector3(6147.00f, 12013.00f, 39.61f), new Vector3(6101.00f, 11389.00f, 54.62f)));
+            dashes.Add(new YasDash(new Vector3(5797.00f, 11963.00f, 39.60f), new Vector3(6239.00f, 11521.00f, 54.63f)));
+            dashes.Add(new YasDash(new Vector3(6577.00f, 10715.00f, 54.64f), new Vector3(6123.00f, 11143.00f, 54.42f)));
+            dashes.Add(new YasDash(new Vector3(5843.00f, 12025.00f, 39.62f), new Vector3(5867.00f, 11399.00f, 54.00f)));
+            dashes.Add(new YasDash(new Vector3(6581.00f, 10761.00f, 54.64f), new Vector3(6034.87f, 10917.85f, 53.88f)));
+            dashes.Add(new YasDash(new Vector3(5797.00f, 11963.00f, 39.60f), new Vector3(6182.85f, 11577.15f, 54.63f)));
+            dashes.Add(new YasDash(new Vector3(6085.00f, 11993.00f, 39.61f), new Vector3(6397.00f, 11529.00f, 54.63f)));
+            dashes.Add(new YasDash(new Vector3(5801.00f, 11975.00f, 39.60f), new Vector3(6150.74f, 11506.03f, 54.63f)));
+            dashes.Add(new YasDash(new Vector3(6073.00f, 12013.00f, 39.61f), new Vector3(6359.35f, 11537.81f, 54.63f)));
+            dashes.Add(new YasDash(new Vector3(7195.00f, 8713.00f, 56.02f), new Vector3(7461.15f, 9067.39f, 55.60f)));
+            dashes.Add(new YasDash(new Vector3(10605.00f, 6609.00f, 54.86f), new Vector3(9981.00f, 6565.00f, 55.12f)));
+
+
             #endregion
             jTimers = new JungleTimers();
         }
@@ -177,7 +193,7 @@ namespace Yasuo_Sharpino
 
         public static YasDash closestDashToMouse(YasDash w1, YasDash w2)
         {
-            return Vector3.DistanceSquared(w1.to, Game.CursorPos) > Vector3.DistanceSquared(w2.to, Game.CursorPos) ? w2 : w1;
+            return Vector3.DistanceSquared(w1.to, Game.CursorPos) + Vector3.DistanceSquared(w1.from, Player.Position) > Vector3.DistanceSquared(w2.to, Game.CursorPos) + Vector3.DistanceSquared(w2.from, Player.Position) ? w2 : w1;
         }
 
         public static void saveLastDash()
@@ -199,18 +215,18 @@ namespace Yasuo_Sharpino
                     {
                         var distToDash = Player.Distance(closeDash.from);
 
-                        if (W.IsReady() && distToDash < 136f && jumps.Count == 0)
+                        if (W.IsReady() && distToDash < 136f && jumps.Count == 0 && MinionManager.GetMinions(Game.CursorPos,350).Where(min => min.IsVisible).Count()<2)
                         {
                             W.Cast(closeDash.to);
                         }
 
-                        if (distToDash > 5f)
+                        if (distToDash > 2f)
                         {
                             Player.IssueOrder(GameObjectOrder.MoveTo, closeDash.from);
                             return;
                         }
 
-                        if (distToDash < 6f && jumps.Count > 0)
+                        if (distToDash < 3f && jumps.Count > 0)
                         {
                             E.Cast(jumps.First());
                         }
@@ -230,11 +246,10 @@ namespace Yasuo_Sharpino
         public static List<Obj_AI_Base> canGoThrough(YasDash dash)
         {
             List<Obj_AI_Base> jumps = ObjectManager.Get<Obj_AI_Base>().Where(enemy => enemyIsJumpable(enemy) && enemy.IsValidTarget(550, true, dash.to)).ToList();
-            Console.WriteLine(jumps.Count);
             List<Obj_AI_Base> canBejump = new List<Obj_AI_Base>();
             foreach (var jumpe in jumps)
             {
-                if (YasMath.interCir(dash.from.To2D(), dash.to.To2D(), jumpe.Position.To2D(), 25) /*&& jumpe.Distance(dash.to) < Player.Distance(dash.to)*/)
+                if (YasMath.interCir(dash.from.To2D(), dash.to.To2D(), jumpe.Position.To2D(), 35) /*&& jumpe.Distance(dash.to) < Player.Distance(dash.to)*/)
                 {
                     canBejump.Add(jumpe);
                 }

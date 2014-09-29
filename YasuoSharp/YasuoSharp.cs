@@ -261,19 +261,21 @@ namespace Yasuo_Sharpino
             Utility.DrawCircle(Yasuo.Player.Position, 475, Color.Blue);
             Utility.DrawCircle(Yasuo.Player.Position, 1200, Color.Blue);
 
-
-            Utility.DrawCircle(Game.CursorPos, 350, Color.Cyan);
-
-            Utility.DrawCircle(Yasuo.lastDash.from, 60, Color.BlueViolet);
-            Utility.DrawCircle(Yasuo.lastDash.to, 60, Color.BlueViolet);
-
-            foreach (Yasuo.YasDash dash in Yasuo.dashes)
+            if (Config.Item("flee").GetValue<KeyBind>().Active)
             {
-                Utility.DrawCircle(dash.from, 60, Color.LawnGreen,3,4);
-                Utility.DrawCircle(dash.to, 60, Color.LawnGreen,3,4);
-            }
+                Utility.DrawCircle(Game.CursorPos, 350, Color.Cyan);
 
-         /*   if ((int)NavMesh.GetCollisionFlags(Game.CursorPos) == 2 || (int)NavMesh.GetCollisionFlags(Game.CursorPos) == 64)
+                Utility.DrawCircle(Yasuo.lastDash.from, 60, Color.BlueViolet);
+                Utility.DrawCircle(Yasuo.lastDash.to, 60, Color.BlueViolet);
+
+                foreach (Yasuo.YasDash dash in Yasuo.dashes)
+                {
+                    Utility.DrawCircle(dash.from, 60, Color.LawnGreen, 3, 4);
+                    Utility.DrawCircle(dash.to, 60, Color.LawnGreen, 3, 4);
+                }
+
+            }
+            /*   if ((int)NavMesh.GetCollisionFlags(Game.CursorPos) == 2 || (int)NavMesh.GetCollisionFlags(Game.CursorPos) == 64)
                 Drawing.DrawCircle(Game.CursorPos, 70, Color.Green);
             if (map.isWall(Game.CursorPos.To2D()))
                 Drawing.DrawCircle(Game.CursorPos, 100, Color.Red);
