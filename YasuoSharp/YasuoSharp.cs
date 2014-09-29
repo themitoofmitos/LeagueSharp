@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 using LeagueSharp;
 using LeagueSharp.Common;
-using System.Drawing;
-
 /*
  * To DO:
  * Dont use skills on cd
@@ -28,6 +26,8 @@ using System.Drawing;
  * 
  * 
  * */
+using SharpDX;
+using Color = System.Drawing.Color;
 
 
 namespace Yasuo_Sharpino
@@ -50,6 +50,9 @@ namespace Yasuo_Sharpino
 
         public static int afterDash = 0;
 
+        public static bool canSave = true;
+        public static bool canExport = true;
+
         public YasuoSharp()
         {
             if (ObjectManager.Player.BaseSkinName != CharName) 
@@ -64,6 +67,7 @@ namespace Yasuo_Sharpino
         private static void onLoad(EventArgs args)
         {
             Yasuo.setSkillShots();
+            Yasuo.setDashes();
             Yasuo.point1 = Yasuo.Player.Position;
             Game.PrintChat("Yasuo - SharpSword by DeTuKs");
 
@@ -123,7 +127,8 @@ namespace Yasuo_Sharpino
                 //Debug
                 Config.AddSubMenu(new Menu("Debug", "debug"));
                 Config.SubMenu("debug").AddItem(new MenuItem("WWLast", "Print last ww blocked")).SetValue(new KeyBind('T', KeyBindType.Press, false));
-
+                Config.SubMenu("debug").AddItem(new MenuItem("saveDash", "saveDashd")).SetValue(new KeyBind('o', KeyBindType.Press, false));
+                Config.SubMenu("debug").AddItem(new MenuItem("exportDash", "export dashes")).SetValue(new KeyBind('p', KeyBindType.Press, false));
             
                 Config.AddToMainMenu();
                 Drawing.OnDraw += onDraw;
@@ -149,6 +154,8 @@ namespace Yasuo_Sharpino
 
         private static void OnGameUpdate(EventArgs args)
         {
+
+
             if (Orbwalker.ActiveMode.ToString() == "Combo")
             {
                 Obj_AI_Hero target = SimpleTs.GetTarget(1250, SimpleTs.DamageType.Physical);
@@ -177,8 +184,40 @@ namespace Yasuo_Sharpino
 
             if (Config.Item("flee").GetValue<KeyBind>().Active)
             {
-                Yasuo.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-                Yasuo.gapCloseE(Game.CursorPos.To2D());
+                Yasuo.fleeToMouse();
+            }
+
+            if (Config.Item("saveDash").GetValue<KeyBind>().Active && canSave)
+            {
+                Yasuo.saveLastDash();
+                canSave = false;
+            }
+            else
+            {
+                canSave = true;
+            }
+
+            if (Config.Item("exportDash").GetValue<KeyBind>().Active && canExport)
+            {
+                using (var file = new System.IO.StreamWriter(@"C:\YasuoDashes.txt"))
+                {
+                    
+                    foreach (var dash in Yasuo.dashes)
+                    {
+                        string dashS = "dashes.Add(new YasDash(new Vector3(" + dash.from.X.ToString("0.00").Replace(',', '.') + "f," + dash.from.Y.ToString("0.00").Replace(',', '.') + "f," + dash.from.Z.ToString("0.00").Replace(',', '.') +
+                            "f),new Vector3(" + dash.to.X.ToString("0.00").Replace(',', '.') + "f," + dash.to.Y.ToString("0.00").Replace(',', '.') + "f," + dash.to.Z.ToString("0.00").Replace(',', '.') + "f)));";
+                        //new YasDash(new Vector3(X,Y,Z),new Vector3(X,Y,Z))
+
+                        file.WriteLine(dashS);
+                    }
+                    file.Close();
+                }
+
+                canExport = false;
+            }
+            else
+            {
+                canExport = true;
             }
 
             if (Config.Item("WWLast").GetValue<KeyBind>().Active)
@@ -209,6 +248,18 @@ namespace Yasuo_Sharpino
 
             Utility.DrawCircle(Yasuo.Player.Position, 475, Color.Blue);
             Utility.DrawCircle(Yasuo.Player.Position, 1200, Color.Blue);
+
+
+            Utility.DrawCircle(Game.CursorPos, 350, Color.Cyan);
+
+            Utility.DrawCircle(Yasuo.lastDash.from, 60, Color.BlueViolet);
+            Utility.DrawCircle(Yasuo.lastDash.to, 60, Color.BlueViolet);
+
+            foreach (Yasuo.YasDash dash in Yasuo.dashes)
+            {
+                Utility.DrawCircle(dash.from, 60, Color.LawnGreen);
+                Utility.DrawCircle(dash.to, 60, Color.LawnGreen);
+            }
 
          /*   if ((int)NavMesh.GetCollisionFlags(Game.CursorPos) == 2 || (int)NavMesh.GetCollisionFlags(Game.CursorPos) == 64)
                 Drawing.DrawCircle(Game.CursorPos, 70, Color.Green);
@@ -290,6 +341,7 @@ namespace Yasuo_Sharpino
             {
                 if (arg.SData.Name == "YasuoDashWrapper")//start dash
                 {
+                    Yasuo.lastDash.from = Yasuo.Player.Position;
                     Yasuo.isDashigPro = true;
                     Yasuo.castFrom = Yasuo.Player.Position;
                     Yasuo.startDash = Game.Time;
@@ -321,6 +373,7 @@ namespace Yasuo_Sharpino
                 gp.Position = 1;
                 if (gp.ReadInteger() == Yasuo.Player.NetworkId)
                 {
+                    Yasuo.lastDash.to = Yasuo.Player.Position;
                     Yasuo.isDashigPro = false;
                     Yasuo.time = Game.Time - Yasuo.startDash;
                 }

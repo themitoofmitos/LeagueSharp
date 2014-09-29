@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Combo.cs" />
+    <Compile Include="JungleTimers.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Missle.cs" />
     <Compile Include="Polygon.cs" />

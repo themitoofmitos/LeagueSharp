@@ -9,11 +9,37 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using System.Drawing;
 using SharpDX;
+using YasuoSharp;
 
 namespace Yasuo_Sharpino
 {
     class Yasuo
     {
+        internal class YasDash
+        {
+            public Vector3 from = new Vector3(-1,-1,-1);
+            public Vector3 to = new Vector3(-1,-1,-1);
+
+            public YasDash()
+            {
+                from = new Vector3(-1,-1,-1);
+                to = new Vector3(-1,-1,-1);
+            }
+
+            public YasDash(Vector3 fromV, Vector3 toV)
+            {
+                from = fromV;
+                to = toV;
+            }
+
+            public YasDash(YasDash dash)
+            {
+                from = dash.from;
+                to = dash.to;
+            }
+
+        }
+
         internal  class YasWall
         {
             public Obj_SpellLineMissile pointL;
@@ -43,6 +69,10 @@ namespace Yasuo_Sharpino
                 endtime = Game.Time + 4;
             }
         }
+
+        public static List<YasDash> dashes = new List<YasDash>(); 
+
+        public static YasDash lastDash = new YasDash();
 
         public static Obj_AI_Hero Player = ObjectManager.Player;
 
@@ -79,6 +109,109 @@ namespace Yasuo_Sharpino
 
         public static YasWall wall = new YasWall();
 
+        public static JungleTimers jTimers;
+
+#region WallDashing
+
+        public static void setDashes()
+        {
+            dashes.Add(new YasDash(new Vector3(5997.00f, 5065.00f, 51.67f), new Vector3(6447.35f, 5216.45f, 56.11f)));
+            dashes.Add(new YasDash(new Vector3(6897.00f, 5665.00f, 55.66f), new Vector3(6659.32f, 5285.89f, 58.84f)));
+            dashes.Add(new YasDash(new Vector3(3847.00f, 5965.00f, 55.13f), new Vector3(3477.00f, 6263.00f, 55.61f)));
+            dashes.Add(new YasDash(new Vector3(3197.00f, 6815.00f, 53.86f), new Vector3(3328.71f, 6366.87f, 55.61f)));
+            dashes.Add(new YasDash(new Vector3(6615.00f, 5197.00f, 56.40f), new Vector3(6885.00f, 5761.00f, 55.60f)));
+            dashes.Add(new YasDash(new Vector3(3435.00f, 6267.00f, 55.61f), new Vector3(4003.00f, 6007.00f, 54.55f)));
+            dashes.Add(new YasDash(new Vector3(3353.00f, 6319.00f, 55.61f), new Vector3(3141.00f, 6745.00f, 53.93f)));
+            dashes.Add(new YasDash(new Vector3(6511.00f, 5233.00f, 57.02f), new Vector3(5972.25f, 5084.35f, 51.67f)));
+            jTimers = new JungleTimers();
+        }
+
+        public static YasDash getClosestDash()
+        {
+            YasDash closestWall = dashes[0];
+            for(int i=1;i<dashes.Count;i++)
+            {
+                closestWall = closestDashToMouse(closestWall, dashes[i]);
+            }
+            if (closestWall.to.Distance(Game.CursorPos) < 350)
+                return closestWall;
+            return null;
+        }
+
+        public static YasDash closestDashToMouse(YasDash w1, YasDash w2)
+        {
+            return Vector3.DistanceSquared(w1.to, Game.CursorPos) > Vector3.DistanceSquared(w2.to, Game.CursorPos) ? w2 : w1;
+        }
+
+        public static void saveLastDash()
+        {
+            if(lastDash.from.X != -1 && lastDash.from.Y != -1)
+                dashes.Add(new YasDash(lastDash));
+            lastDash = new YasDash();
+        }
+
+        public static void fleeToMouse()
+        {
+            try
+            {
+                YasDash closeDash = getClosestDash();
+                if (closeDash != null)
+                {
+                    
+                    List<Obj_AI_Base> jumps = canGoThrough(closeDash);
+                    if (jumps.Count > 0 || ((W.IsReady() || (Yasuo.wall != null && (Yasuo.wall.endtime-Game.Time)>3f))  && jTimers.closestJCUp(closeDash.to)))
+                    {
+                        var distToDash = Player.Distance(closeDash.from);
+
+                        if (W.IsReady() && distToDash < 136f && jumps.Count == 0)
+                        {
+                            W.Cast(closeDash.to);
+                        }
+
+                        if (distToDash > 5f)
+                        {
+                            Player.IssueOrder(GameObjectOrder.MoveTo, closeDash.from);
+                            return;
+                        }
+
+                        if (distToDash < 6f && jumps.Count > 0)
+                        {
+                            E.Cast(jumps.First());
+                        }
+                        return;
+                    }
+                }
+                Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
+        public static List<Obj_AI_Base> canGoThrough(YasDash dash)
+        {
+            List<Obj_AI_Base> jumps = ObjectManager.Get<Obj_AI_Base>().Where(enemy => enemyIsJumpable(enemy) && enemy.IsValidTarget(550, true, dash.to)).ToList();
+            Console.WriteLine(jumps.Count);
+            List<Obj_AI_Base> canBejump = new List<Obj_AI_Base>();
+            foreach (var jumpe in jumps)
+            {
+                if (YasMath.interCir(dash.from.To2D(), dash.to.To2D(), jumpe.Position.To2D(), 25) /*&& jumpe.Distance(dash.to) < Player.Distance(dash.to)*/)
+                {
+                    canBejump.Add(jumpe);
+                }
+            }
+            return canBejump.OrderBy(jum => Player.Distance(jum)).ToList();
+        }
+
+
+        public static float getLengthTillPos(Vector3 pos)
+        {
+            return 0;
+        }
+
+#endregion
+
         public static void setSkillShots()
         {
             Q.SetSkillshot(getNewQSpeed(), 50f, float.MaxValue, false, SkillshotType.SkillshotLine);
@@ -98,6 +231,7 @@ namespace Yasuo_Sharpino
 
             Q.SetSkillshot(getNewQSpeed(), 50f, float.MaxValue, false, SkillshotType.SkillshotLine);
             if (target == null) return;
+            useHydra(target);
 
             if (YasuoSharp.Config.Item("smartR").GetValue<bool>() && R.IsReady())
                 useRSmart();
@@ -115,7 +249,6 @@ namespace Yasuo_Sharpino
             }
 
             useQSmart(target);
-            useHydra(target);
         }
 
         public static Vector2 getNextPos(Obj_AI_Hero target)
