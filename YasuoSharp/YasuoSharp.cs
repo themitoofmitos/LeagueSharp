@@ -52,6 +52,7 @@ namespace Yasuo_Sharpino
 
         public static bool canSave = true;
         public static bool canExport = true;
+        public static bool canDelete = true;
 
         public YasuoSharp()
         {
@@ -129,6 +130,7 @@ namespace Yasuo_Sharpino
                 Config.SubMenu("debug").AddItem(new MenuItem("WWLast", "Print last ww blocked")).SetValue(new KeyBind('T', KeyBindType.Press, false));
                 Config.SubMenu("debug").AddItem(new MenuItem("saveDash", "saveDashd")).SetValue(new KeyBind('o', KeyBindType.Press, false));
                 Config.SubMenu("debug").AddItem(new MenuItem("exportDash", "export dashes")).SetValue(new KeyBind('p', KeyBindType.Press, false));
+                Config.SubMenu("debug").AddItem(new MenuItem("deleteDash", "deleteLastDash")).SetValue(new KeyBind('i', KeyBindType.Press, false));
             
                 Config.AddToMainMenu();
                 Drawing.OnDraw += onDraw;
@@ -197,6 +199,16 @@ namespace Yasuo_Sharpino
                 canSave = true;
             }
 
+            if (Config.Item("deleteDash").GetValue<KeyBind>().Active && canDelete)
+            {
+                if(Yasuo.dashes.Count>0)
+                    Yasuo.dashes.RemoveAt(Yasuo.dashes.Count - 1);
+                canDelete = false;
+            }
+            else
+            {
+                canDelete = true;
+            }
             if (Config.Item("exportDash").GetValue<KeyBind>().Active && canExport)
             {
                 using (var file = new System.IO.StreamWriter(@"C:\YasuoDashes.txt"))
@@ -257,8 +269,8 @@ namespace Yasuo_Sharpino
 
             foreach (Yasuo.YasDash dash in Yasuo.dashes)
             {
-                Utility.DrawCircle(dash.from, 60, Color.LawnGreen);
-                Utility.DrawCircle(dash.to, 60, Color.LawnGreen);
+                Utility.DrawCircle(dash.from, 60, Color.LawnGreen,3,4);
+                Utility.DrawCircle(dash.to, 60, Color.LawnGreen,3,4);
             }
 
          /*   if ((int)NavMesh.GetCollisionFlags(Game.CursorPos) == 2 || (int)NavMesh.GetCollisionFlags(Game.CursorPos) == 64)
