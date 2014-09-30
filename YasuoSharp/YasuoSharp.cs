@@ -359,8 +359,12 @@ namespace Yasuo_Sharpino
 
                 foreach (Yasuo.YasDash dash in Yasuo.dashes)
                 {
-                    Utility.DrawCircle(dash.from, 60, Color.LawnGreen, 3, 4);
-                    Utility.DrawCircle(dash.to, 60, Color.LawnGreen, 3, 4);
+                    if (dash.from.Distance(Game.CursorPos) < 1200)
+                    {
+                        var SA = Drawing.WorldToScreen(dash.from);
+                        var SB = Drawing.WorldToScreen(dash.to);
+                        Drawing.DrawLine(SA.X, SA.Y, SB.X, SB.Y, 3, Color.Green);
+                    }
                 }
 
             }
