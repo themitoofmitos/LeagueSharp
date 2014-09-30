@@ -59,11 +59,6 @@ namespace Yasuo_Sharpino
 
         private float calcDamage()
         {
-            int slot = (int)getSpellSlot();
-            if (Mis.SData.Name.Contains("BasicAttack"))
-                return (float)DamageLib.getDmg(caster, DamageLib.SpellType.AD);
-            if (slot>-1 && slot<5)
-                return (float)DamageLib.getDmg(caster, (DamageLib.SpellType)slot);
             return 0f;
         }
 
