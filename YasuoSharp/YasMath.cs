@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 
@@ -119,6 +120,42 @@ namespace Yasuo_Sharpino
                 (B2 * C1 - B1 * C2) / delta,
                 (A1 * C2 - A2 * C1) / delta
             );
+        }
+
+        public static List<Vector2> GetCastMinionsPredictedPositions(List<Obj_AI_Base> minions,
+            float delay,
+            float width,
+            float speed,
+            Vector3 from,
+            float range,
+            bool collision,
+            SkillshotType stype,
+            Vector3 rangeCheckFrom = new Vector3())
+        {
+            var result = new List<Vector2>();
+            from = from.To2D().IsValid() ? from : ObjectManager.Player.ServerPosition;
+            foreach (var minion in minions)
+            {
+                var pos = Prediction.GetPrediction(new PredictionInput
+                {
+                    Unit = minion,
+                    Delay = delay,
+                    Radius = width,
+                    Speed = speed,
+                    From = from,
+                    Range = range,
+                    Collision = collision,
+                    Type = stype,
+                    RangeCheckFrom = rangeCheckFrom
+                });
+
+                if (pos.Hitchance >= HitChance.High)
+                {
+                    result.Add(pos.CastPosition.To2D());
+                }
+            }
+
+            return result;
         }
 
     }
