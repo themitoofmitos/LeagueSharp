@@ -82,12 +82,12 @@ namespace Yasuo_Sharpino
             Yasuo.setSkillShots();
             Yasuo.setDashes();
             Yasuo.point1 = Yasuo.Player.Position;
-            Game.PrintChat("Yasuo - SharpSword by DeTuKs");
+            Game.PrintChat("YasuoSharp by DeTuKs");
 
             try
             {
 
-                Config = new Menu("Yasuo - SharpSwrod", "Yasuo", true);
+                Config = new Menu("YasuoSharp", "Yasuo", true);
                 //Orbwalker
                 Config.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
                 Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalker"));
@@ -102,14 +102,9 @@ namespace Yasuo_Sharpino
                 Config.SubMenu("combo").AddItem(new MenuItem("smartR", "Smart R")).SetValue(true);
                 Config.SubMenu("combo").AddItem(new MenuItem("useRHit", "Use R if hit")).SetValue(new Slider(3, 5, 1));
                 Config.SubMenu("combo").AddItem(new MenuItem("useRHitTime", "Use R when they land")).SetValue(true);
-
-
-
                 Config.SubMenu("combo").AddItem(new MenuItem("useEWall", "use E to safe")).SetValue(true);
                 //Flee away
                 Config.SubMenu("combo").AddItem(new MenuItem("flee", "E away")).SetValue(new KeyBind('X', KeyBindType.Press, false));
-
-                
 
 
                 //LastHit
@@ -126,14 +121,17 @@ namespace Yasuo_Sharpino
                 Config.SubMenu("harass").AddItem(new MenuItem("harassTower", "Harass under tower")).SetValue(false);
                 Config.SubMenu("harass").AddItem(new MenuItem("harassOn", "Harass enemies")).SetValue(true);
                 Config.SubMenu("harass").AddItem(new MenuItem("harQ3Only", "Use only Q3")).SetValue(false);
+                //Drawings
+                Config.AddSubMenu(new Menu("Drawing Sharp", "drawing"));
+                Config.SubMenu("drawing").AddItem(new MenuItem("disDraw", "Dissabel drawing")).SetValue(false);
+                Config.SubMenu("drawing").AddItem(new MenuItem("drawQ", "Draw Q range")).SetValue(true);
+                Config.SubMenu("drawing").AddItem(new MenuItem("drawE", "Draw E range")).SetValue(true);
+                Config.SubMenu("drawing").AddItem(new MenuItem("drawR", "Draw R range")).SetValue(true);
+                Config.SubMenu("drawing").AddItem(new MenuItem("drawWJ", "Draw Wall Jumps")).SetValue(true);
+
                 //Extra
                 Config.AddSubMenu(new Menu("Extra Sharp", "extra"));
                 Config.SubMenu("extra").AddItem(new MenuItem("djTur", "Dont Jump turrets")).SetValue(true);
-                Config.SubMenu("extra").AddItem(new MenuItem("disDraw", "Dissabel drawing")).SetValue(false);
-                List<string> levStrings = new List<string>();
-               // levStrings.Add("None");
-               // levStrings.Add("Q E W Q start");
-               // levStrings.Add("Q E Q W start");
                 Config.SubMenu("extra").AddItem(new MenuItem("autoLevel", "Auto Level")).SetValue(true);
                 Config.SubMenu("extra").AddItem(new MenuItem("levUpSeq", "")).SetValue(new StringList(new string[2] { "Q E W Q start", "Q E Q W start" }));
 
@@ -149,9 +147,9 @@ namespace Yasuo_Sharpino
                 //Debug
                 Config.AddSubMenu(new Menu("Debug", "debug"));
                 Config.SubMenu("debug").AddItem(new MenuItem("WWLast", "Print last ww blocked")).SetValue(new KeyBind('T', KeyBindType.Press, false));
-                Config.SubMenu("debug").AddItem(new MenuItem("saveDash", "saveDashd")).SetValue(new KeyBind('o', KeyBindType.Press, false));
-                Config.SubMenu("debug").AddItem(new MenuItem("exportDash", "export dashes")).SetValue(new KeyBind('p', KeyBindType.Press, false));
-                Config.SubMenu("debug").AddItem(new MenuItem("deleteDash", "deleteLastDash")).SetValue(new KeyBind('i', KeyBindType.Press, false));
+                Config.SubMenu("debug").AddItem(new MenuItem("saveDash", "saveDashd")).SetValue(new KeyBind('O', KeyBindType.Press, false));
+                Config.SubMenu("debug").AddItem(new MenuItem("exportDash", "export dashes")).SetValue(new KeyBind('P', KeyBindType.Press, false));
+                Config.SubMenu("debug").AddItem(new MenuItem("deleteDash", "deleteLastDash")).SetValue(new KeyBind('I', KeyBindType.Press, false));
             
                 Config.AddToMainMenu();
                 Drawing.OnDraw += onDraw;
@@ -170,7 +168,7 @@ namespace Yasuo_Sharpino
             }
             catch
             {
-                Game.PrintChat("Oops. Something went wrong with Yasuo- Sharpino");
+                Game.PrintChat("Oops. Something went wrong with Yasuo - Sharpino");
             }
 
         }
@@ -346,11 +344,12 @@ namespace Yasuo_Sharpino
             if (Config.Item("disDraw").GetValue<bool>())
                 return;
 
+            if (Config.Item("drawQ").GetValue<bool>())
+                Utility.DrawCircle(Yasuo.Player.Position, 475,(Yasuo.isDashigPro)?Color.Red:Color.Blue,10,10);
+            if (Config.Item("drawR").GetValue<bool>())
+                Utility.DrawCircle(Yasuo.Player.Position, 1200, Color.Blue);
 
-            Utility.DrawCircle(Yasuo.Player.Position, 475,(Yasuo.isDashigPro)?Color.Red:Color.Blue,10,10);
-            Utility.DrawCircle(Yasuo.Player.Position, 1200, Color.Blue);
-
-            if (Config.Item("flee").GetValue<KeyBind>().Active)
+            if (Config.Item("flee").GetValue<KeyBind>().Active && Config.Item("drawWJ").GetValue<bool>())
             {
                 Utility.DrawCircle(Game.CursorPos, 350, Color.Cyan);
 
