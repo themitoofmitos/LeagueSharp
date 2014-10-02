@@ -68,17 +68,16 @@ namespace Yasuo_Sharpino
 
         public YasuoSharp()
         {
+            CustomEvents.Game.OnGameLoad += onLoad;
+        }
+
+        private static void onLoad(EventArgs args)
+        {
             if (ObjectManager.Player.BaseSkinName != CharName) 
                 return;
 
             map = new Map();
             /* CallBAcks */
-            CustomEvents.Game.OnGameLoad += onLoad;
-
-        }
-
-        private static void onLoad(EventArgs args)
-        {
             Yasuo.setSkillShots();
             Yasuo.setDashes();
             Yasuo.point1 = Yasuo.Player.Position;
