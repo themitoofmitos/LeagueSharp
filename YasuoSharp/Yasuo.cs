@@ -379,7 +379,7 @@ namespace Yasuo_Sharpino
 
         public static bool goesThroughWall(Vector3 vec1, Vector3 vec2)
         {
-            if (wall.endtime < Game.Time)
+            if (wall.endtime < Game.Time || wall.pointL == null || wall.pointL == null)
                 return false;
             Vector2 inter = YasMath.LineIntersectionPoint(vec1.To2D(), vec2.To2D(), wall.pointL.Position.To2D(), wall.pointR.Position.To2D());
             float wallW = (300 + 50 * W.Level);
@@ -626,11 +626,13 @@ namespace Yasuo_Sharpino
         {
             var result = new IsSafeResult();
             result.SkillshotList = new List<Skillshot>();
+            result.casters = new List<Obj_AI_Base>();
 
             foreach (var skillshot in YasuoSharp.DetectedSkillshots)
             {
-                if (skillshot.Evade() && skillshot.IsDanger(point))
+                if (skillshot.IsDanger(point))
                 {
+                    Console.WriteLine("not safe");
                     result.SkillshotList.Add(skillshot);
                     result.casters.Add(skillshot.Unit);
                 }
@@ -640,31 +642,84 @@ namespace Yasuo_Sharpino
             return result;
         }
 
-        public static void useEtoSafe(Skillshot skillShot,Obj_AI_Base to, bool forward = false)
+        public static Obj_AI_Minion GetCandidates(Obj_AI_Hero player, List<Skillshot> skillshots)
+        {
+            float currentDashSpeed = 700 + player.MoveSpeed;//At least has to be like this
+            IEnumerable<Obj_AI_Minion> minions = ObjectManager.Get<Obj_AI_Minion>();
+            Obj_AI_Minion candidate = new Obj_AI_Minion();
+            double closest = 10000000000000;
+            foreach (Obj_AI_Minion minion in minions)
+            {
+                if (Vector2.Distance(player.Position.To2D(), minion.Position.To2D()) < 475 && minion.IsEnemy && enemyIsJumpable(minion) && closest > Vector3.DistanceSquared(Game.CursorPos, minion.Position))
+                {
+                    foreach (Skillshot skillshot in skillshots)
+                    {
+                        //Get intersection point
+                        //  Vector2 intersectionPoint = LineIntersectionPoint(startPos, player.Position.To2D(), endPos, V2E(player.Position, minion.Position, 475));
+                        //Time when yasuo will be in intersection point
+                        //  float arrivingTime = Vector2.Distance(player.Position.To2D(), intersectionPoint) / currentDashSpeed;
+                        //Estimated skillshot position
+                        //  Vector2 skillshotPosition = V2E(startPos.To3D(), intersectionPoint.To3D(), speed * arrivingTime);
+                        if (skillshot.IsDanger(V2E(player.Position, minion.Position, 475)))
+                        {
+                            candidate = minion;
+                            closest = Vector3.DistanceSquared(Game.CursorPos, minion.Position);
+                        }
+                    }
+                }
+            }
+            return candidate;
+        }
+
+        private static Vector2 V2E(Vector3 from, Vector3 direction, float distance)
+        {
+            return (from + distance * Vector3.Normalize(direction - from)).To2D();
+        }
+
+        public static bool wontHitOnDash(Skillshot ss, Obj_AI_Base jumpOn)
+        {
+            float currentDashSpeed = 700 + Player.MoveSpeed;//At least has to be like this
+            //Get intersection point
+            Vector2 intersectionPoint = YasMath.LineIntersectionPoint(Player.Position.To2D(), V2E(Player.Position, jumpOn.Position, 475), ss.Start, ss.End);
+            //Time when yasuo will be in intersection point
+             float arrivingTime = Vector2.Distance(Player.Position.To2D(), intersectionPoint) / currentDashSpeed;
+            //Estimated skillshot position
+             Vector2 skillshotPosition = ss.GetMissilePosition((int)(arrivingTime*1000));
+
+            if (Vector2.DistanceSquared(skillshotPosition, intersectionPoint) <
+                (ss.SpellData.Radius + Player.BoundingRadius))
+                return false;
+            return true;
+
+
+        }
+
+        public static void useEtoSafe(Skillshot skillShot)
         {
             if (!E.IsReady())
                 return;
-            if (!skillShot.IsAboutToHit(750, Player))
-                return;
+            Console.WriteLine("try to safe");
+            float closest = float.MaxValue;
+            Obj_AI_Base closestTarg = null;
+            float currentDashSpeed = 700 + Player.MoveSpeed;
             foreach (Obj_AI_Base enemy in ObjectManager.Get<Obj_AI_Base>().Where(ob => ob.NetworkId != skillShot.Unit.NetworkId && enemyIsJumpable(ob) && ob.Distance(Player) < E.Range))
             {
                 var pPos = Player.Position.To2D();
-                Vector2 posAfterE = pPos + (Vector2.Normalize(enemy.Position.To2D() - pPos) * E.Range);
-                if (forward)
+                Vector2 posAfterE = V2E(Player.Position, enemy.Position, 475);
+
+
+                if (isSafePoint(posAfterE).IsSafe && wontHitOnDash(skillShot,enemy)/* && skillShot.IsSafePath(new List<Vector2>() { posAfterE }, 0, (int)currentDashSpeed, 0).IsSafe*/)
                 {
-                    if (posAfterE.Distance(to) < pPos.Distance(to) /*&& isSafePoint(posAfterE).IsSafe*/)
+                    float curDist = Vector2.DistanceSquared(Game.CursorPos.To2D(), posAfterE);
+                    if (curDist < closest)
                     {
-                        if (useENormal(enemy))
-                            return;
+                        closestTarg = enemy;
+                        closest = curDist;
                     }
                 }
-                else if (posAfterE.Distance(to) > pPos.Distance(to)-150)
-                {
-                    if (useENormal(enemy))
-                        return;
-                }
-
             }
+            if (closestTarg != null)
+                useENormal(closestTarg);
         }
 
         public static void useWSmart(Skillshot skillShot)
@@ -805,7 +860,7 @@ namespace Yasuo_Sharpino
 
             float dist = Player.Distance(target);
             Vector2 dashPos = new Vector2();
-            if (target.IsMoving)
+            if (target.IsMoving && target.Path.Count() != 0)
             {
                 Vector2 tpos = target.Position.To2D() ;
                 Vector2 path = target.Path[0].To2D() - tpos;

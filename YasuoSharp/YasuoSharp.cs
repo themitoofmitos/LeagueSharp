@@ -68,16 +68,18 @@ namespace Yasuo_Sharpino
 
         public YasuoSharp()
         {
+
+           // map = new Map();
+            /* CallBAcks */
             CustomEvents.Game.OnGameLoad += onLoad;
+
         }
 
         private static void onLoad(EventArgs args)
         {
-            if (ObjectManager.Player.ChampionName != CharName) 
+            if (ObjectManager.Player.ChampionName != CharName)
                 return;
 
-            map = new Map();
-            /* CallBAcks */
             Yasuo.setSkillShots();
             Yasuo.setDashes();
             Yasuo.point1 = Yasuo.Player.Position;
@@ -103,7 +105,7 @@ namespace Yasuo_Sharpino
                 Config.SubMenu("combo").AddItem(new MenuItem("useRHitTime", "Use R when they land")).SetValue(true);
                 Config.SubMenu("combo").AddItem(new MenuItem("useEWall", "use E to safe")).SetValue(true);
                 //Flee away
-                Config.SubMenu("combo").AddItem(new MenuItem("flee", "E away")).SetValue(new KeyBind('X', KeyBindType.Press, false));
+                Config.SubMenu("combo").AddItem(new MenuItem("flee", "E away")).SetValue(new KeyBind('Z', KeyBindType.Press, false));
 
 
                 //LastHit
@@ -226,116 +228,139 @@ namespace Yasuo_Sharpino
             return true;
         }
 
-       
+        public static void updateSkillshots()
+        {
+            foreach (var ss in DetectedSkillshots)
+            {
+                ss.Game_OnGameUpdate();
+            }
+        }
 
         private static void OnGameUpdate(EventArgs args)
         {
-            Yasuo.Q.SetSkillshot(Yasuo.getNewQSpeed(), 50f, float.MaxValue, false, SkillshotType.SkillshotLine);
+            try
+            {
+                Yasuo.Q.SetSkillshot(Yasuo.getNewQSpeed(), 50f, float.MaxValue, false, SkillshotType.SkillshotLine);
 
-            //Remove the detected skillshots that have expired.
-            DetectedSkillshots.RemoveAll(skillshot => !skillshot.IsActive());
-
-            Obj_AI_Hero target = SimpleTs.GetTarget(1250, SimpleTs.DamageType.Physical);
-            if (Orbwalker.ActiveMode.ToString() == "Combo")
-            {
-                Yasuo.doCombo(target);
-            }
-
-            if (Orbwalker.ActiveMode.ToString() == "LastHit")
-            {
-                Yasuo.doLastHit(target);
-                Yasuo.useQSmart(target);
-            }
-
-            if (Orbwalker.ActiveMode.ToString() == "Mixed")
-            {
-                Yasuo.doLastHit(target);
-                Yasuo.useQSmart(target);
-            }
-
-            if (Orbwalker.ActiveMode.ToString() == "LaneClear")
-            {
-                Yasuo.doLaneClear(target);
-            }
-
-            if (Config.Item("flee").GetValue<KeyBind>().Active)
-            {
-                Yasuo.fleeToMouse();
-            }
-
-            if (Config.Item("saveDash").GetValue<KeyBind>().Active && canSave)
-            {
-                Yasuo.saveLastDash();
-                canSave = false;
-            }
-            else
-            {
-                canSave = true;
-            }
-
-            if (Config.Item("deleteDash").GetValue<KeyBind>().Active && canDelete)
-            {
-                if(Yasuo.dashes.Count>0)
-                    Yasuo.dashes.RemoveAt(Yasuo.dashes.Count - 1);
-                canDelete = false;
-            }
-            else
-            {
-                canDelete = true;
-            }
-            if (Config.Item("exportDash").GetValue<KeyBind>().Active && canExport)
-            {
-                using (var file = new System.IO.StreamWriter(@"C:\YasuoDashes.txt"))
+                if (Yasuo.startDash + 1f < Game.Time && Yasuo.isDashigPro)
                 {
-                    
-                    foreach (var dash in Yasuo.dashes)
-                    {
-                        string dashS = "dashes.Add(new YasDash(new Vector3(" + dash.from.X.ToString("0.00").Replace(',', '.') + "f," + dash.from.Y.ToString("0.00").Replace(',', '.') + "f," + dash.from.Z.ToString("0.00").Replace(',', '.') +
-                            "f),new Vector3(" + dash.to.X.ToString("0.00").Replace(',', '.') + "f," + dash.to.Y.ToString("0.00").Replace(',', '.') + "f," + dash.to.Z.ToString("0.00").Replace(',', '.') + "f)));";
-                        //new YasDash(new Vector3(X,Y,Z),new Vector3(X,Y,Z))
-
-                        file.WriteLine(dashS);
-                    }
-                    file.Close();
+                    Yasuo.isDashigPro = false;
                 }
 
-                canExport = false;
-            }
-            else
-            {
-                canExport = true;
-            }
+                //updateSkillshots();
+                //Remove the detected skillshots that have expired.
+                DetectedSkillshots.RemoveAll(skillshot => !skillshot.IsActive());
 
-            if (Config.Item("WWLast").GetValue<KeyBind>().Active)
-            {
-                Console.WriteLine("Last WW skill blocked: " + lastSpell);
-                Game.PrintChat("Last WW skill blocked: " + lastSpell);
-            }
+                Obj_AI_Hero target = SimpleTs.GetTarget(1250, SimpleTs.DamageType.Physical);
+                if (Orbwalker.ActiveMode.ToString() == "Combo")
+                {
+                    Yasuo.doCombo(target);
+                }
 
-            if (Config.Item("harassOn").GetValue<bool>() && Orbwalker.ActiveMode.ToString() == "None")
-            {
-                Yasuo.useQSmart(target, Config.Item("harQ3Only").GetValue<bool>());
-            }
-            if (Config.Item("smartW").GetValue<bool>() && !Config.Item("flee").GetValue<KeyBind>().Active)
+                if (Orbwalker.ActiveMode.ToString() == "LastHit")
+                {
+                    Yasuo.doLastHit(target);
+                    Yasuo.useQSmart(target);
+                }
+
+                if (Orbwalker.ActiveMode.ToString() == "Mixed")
+                {
+                    Yasuo.doLastHit(target);
+                    Yasuo.useQSmart(target);
+                }
+
+                if (Orbwalker.ActiveMode.ToString() == "LaneClear")
+                {
+                    Yasuo.doLaneClear(target);
+                }
+
+                if (Config.Item("flee").GetValue<KeyBind>().Active)
+                {
+                    Yasuo.fleeToMouse();
+                }
+
+                if (Config.Item("saveDash").GetValue<KeyBind>().Active && canSave)
+                {
+                    Yasuo.saveLastDash();
+                    canSave = false;
+                }
+                else
+                {
+                    canSave = true;
+                }
+
+                if (Config.Item("deleteDash").GetValue<KeyBind>().Active && canDelete)
+                {
+                    if (Yasuo.dashes.Count > 0)
+                        Yasuo.dashes.RemoveAt(Yasuo.dashes.Count - 1);
+                    canDelete = false;
+                }
+                else
+                {
+                    canDelete = true;
+                }
+                if (Config.Item("exportDash").GetValue<KeyBind>().Active && canExport)
+                {
+                    using (var file = new System.IO.StreamWriter(@"C:\YasuoDashes.txt"))
+                    {
+
+                        foreach (var dash in Yasuo.dashes)
+                        {
+                            string dashS = "dashes.Add(new YasDash(new Vector3(" +
+                                           dash.from.X.ToString("0.00").Replace(',', '.') + "f," +
+                                           dash.from.Y.ToString("0.00").Replace(',', '.') + "f," +
+                                           dash.from.Z.ToString("0.00").Replace(',', '.') +
+                                           "f),new Vector3(" + dash.to.X.ToString("0.00").Replace(',', '.') + "f," +
+                                           dash.to.Y.ToString("0.00").Replace(',', '.') + "f," +
+                                           dash.to.Z.ToString("0.00").Replace(',', '.') + "f)));";
+                            //new YasDash(new Vector3(X,Y,Z),new Vector3(X,Y,Z))
+
+                            file.WriteLine(dashS);
+                        }
+                        file.Close();
+                    }
+
+                    canExport = false;
+                }
+                else
+                {
+                    canExport = true;
+                }
+                //if (!Yasuo.isSafePoint(Yasuo.Player.Position.To2D()).IsSafe)
+                //    Console.WriteLine("not safe");
+                if (Config.Item("WWLast").GetValue<KeyBind>().Active)
+                {
+                    Console.WriteLine("Last WW skill blocked: " + lastSpell);
+                    Game.PrintChat("Last WW skill blocked: " + lastSpell);
+                }
+
+                if (Config.Item("harassOn").GetValue<bool>() && Orbwalker.ActiveMode.ToString() == "None")
+                {
+                    Yasuo.useQSmart(target, Config.Item("harQ3Only").GetValue<bool>());
+                }
+                // if (Config.Item("smartW").GetValue<bool>() && !Config.Item("flee").GetValue<KeyBind>().Active)
                 foreach (var mis in DetectedSkillshots)
                 {
                     Yasuo.useWSmart(mis);
-                    if (Config.Item("smartEDogue").GetValue<bool>())
-                        Yasuo.useEtoSafe(mis,target, (Orbwalker.ActiveMode.ToString() == "Combo") ? true : false);
+                   // if (Config.Item("smartEDogue").GetValue<bool>())
+
+                    if (/*mis.IsAboutToHit(300,Yasuo.Player)*/  !Yasuo.isSafePoint(Yasuo.Player.Position.To2D()).IsSafe)
+                        Yasuo.useEtoSafe(mis);
                 }
-            //smartEDog
-            if (Config.Item("smartEDogue").GetValue<bool>())
+                //smartEDog
+                if (Config.Item("smartEDogue").GetValue<bool>())
+                {
+                    //Yasuo.useEtoSafe(target, (Orbwalker.ActiveMode.ToString() == "Combo")?true:false);
+                }
+
+               
+
+            }
+            catch (Exception ex)
             {
-                //Yasuo.useEtoSafe(target, (Orbwalker.ActiveMode.ToString() == "Combo")?true:false);
+                Console.WriteLine(ex);
             }
 
-            if (Yasuo.startDash + 1f < Game.Time && Yasuo.isDashigPro)
-            {
-                Yasuo.isDashigPro = false;
-            }
-            
-
-            
         }
 
         private static void onDraw(EventArgs args)
@@ -366,6 +391,11 @@ namespace Yasuo_Sharpino
                 }
 
             }
+            foreach (var ss in DetectedSkillshots)
+            {
+                ss.Draw(Color.CadetBlue,Color.Red,1);
+            }
+
             /*   if ((int)NavMesh.GetCollisionFlags(Game.CursorPos) == 2 || (int)NavMesh.GetCollisionFlags(Game.CursorPos) == 64)
                 Drawing.DrawCircle(Game.CursorPos, 70, Color.Green);
             if (map.isWall(Game.CursorPos.To2D()))
