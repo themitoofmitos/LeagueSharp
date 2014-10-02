@@ -33,19 +33,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="clipper_library">
-      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\clipper_library.dll</HintPath>
+      <HintPath>..\..\..\..\..\League#\System\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp">
-      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\LeagueSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\League#\System\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\LeagueSharp.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\League#\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\SharpDX.dll</HintPath>
+      <HintPath>..\..\..\..\..\League#\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>..\..\..\..\..\League#\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

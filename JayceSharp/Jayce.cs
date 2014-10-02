@@ -494,7 +494,7 @@ namespace JayceSharp
 
         public static bool hammerWillKill(Obj_AI_Base target)
         {
-            float damage = (float)DamageLib.getDmg(target, DamageLib.SpellType.AD)+50;
+            float damage = (float)Player.GetAutoAttackDamage(target, true)+50;
             damage += getJayceEHamDmg(target);
             damage += getJayceQHamDmg(target);
 
@@ -504,16 +504,12 @@ namespace JayceSharp
         public static float getJayceEHamDmg(Obj_AI_Base target)
         {
             double percentage = 5 + (3 * Player.Spellbook.GetSpell(SpellSlot.E).Level);
-            return (float)DamageLib.CalcMagicDmg(
-                    ((target.MaxHealth / 100) * percentage) + (ObjectManager.Player.FlatPhysicalDamageMod),
-                    target);
+            return (float)Player.CalcDamage(target, Damage.DamageType.Magical, ((target.MaxHealth / 100) * percentage) + (Player.FlatPhysicalDamageMod));
         }
 
         public static float getJayceQHamDmg(Obj_AI_Base target)
         {
-            return (float)DamageLib.CalcPhysicalDmg(
-                                (-25 + (Player.Spellbook.GetSpell(SpellSlot.Q).Level * 45)) +
-                                (1.0 * Player.FlatPhysicalDamageMod), target);
+            return (float)Player.CalcDamage(Player, Damage.DamageType.Physical, (-25 + (Player.Spellbook.GetSpell(SpellSlot.Q).Level * 45)) + (1.0 * Player.FlatPhysicalDamageMod));
         }
 
     }
