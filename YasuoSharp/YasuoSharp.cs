@@ -73,7 +73,7 @@ namespace Yasuo_Sharpino
 
         private static void onLoad(EventArgs args)
         {
-            if (ObjectManager.Player.BaseSkinName != CharName) 
+            if (ObjectManager.Player.ChampionName != CharName) 
                 return;
 
             map = new Map();
