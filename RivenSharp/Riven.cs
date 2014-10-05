@@ -94,7 +94,7 @@ namespace RivenSharp
                 var targ = target as Obj_AI_Hero;
                 PredictionOutput po = R.GetPrediction(targ, true);
                 if (po.Hitchance == HitChance.High)
-                    if (DamageLib.getDmg(target, DamageLib.SpellType.R) > ((targ.Health + target.ScriptHealthBonus)) && R.IsReady())
+                    if (Player.GetSpellDamage(target, SpellSlot.R) > ((targ.Health + target.ScriptHealthBonus)) && R.IsReady())
                         R.Cast(po.CastPosition);
             }
            
