@@ -190,19 +190,30 @@ namespace KhazixSharp
         {
             float dmg = 0f;
             if (gotPassiveDmg())
-                dmg +=(float)DamageLib.CalcMagicDmg(10 + 10* Player.Level + 0.5*Player.FlatMagicDamageMod,target);
-            dmg += (float)DamageLib.getDmg(target, DamageLib.SpellType.AD);
+                dmg += (float)Player.CalcDamage(target, Damage.DamageType.Physical, 10 + 10 * Player.Level + 0.5 * Player.FlatMagicDamageMod);
+
+            dmg += (float)Player.GetAutoAttackDamage(target);
             if (Q.IsReady())
             {
                 if (targetIsIsolated(target))
-                    dmg += (float) DamageLib.getDmg(target, DamageLib.SpellType.Q, DamageLib.StageType.FirstDamage);
+                {
+                    if (Qdata.Name == "khazixqlong")
+                        dmg += (float)Player.GetSpellDamage(target, SpellSlot.Q, 3);
+                    else
+                        dmg += (float)Player.GetSpellDamage(target, SpellSlot.Q, 1);
+                }
                 else
-                    dmg += (float) DamageLib.getDmg(target, DamageLib.SpellType.Q);
+                {
+                    if (Qdata.Name == "khazixqlong")
+                        dmg += (float)Player.GetSpellDamage(target, SpellSlot.Q, 2);
+                    else
+                        dmg += (float)Player.GetSpellDamage(target, SpellSlot.Q);
+                }
             }
             if (W.IsReady())
-                dmg += (float)DamageLib.getDmg(target, DamageLib.SpellType.W);
+                dmg += (float)Player.GetSpellDamage(target, SpellSlot.W);
             if(E.IsReady())
-                dmg += (float)DamageLib.getDmg(target, DamageLib.SpellType.E);
+                dmg += (float)Player.GetSpellDamage(target, SpellSlot.E);
 
 
             return dmg;
