@@ -288,7 +288,7 @@ namespace Yasuo_Sharpino
 
         public static float getNewQSpeed()
         {
-            float ds = 0.4f;//s
+            float ds = 0.5f;//s
             float a = 1 / ds * Yasuo.Player.AttackSpeedMod;
             return 1 / a;
         }
@@ -296,7 +296,6 @@ namespace Yasuo_Sharpino
         public static void doCombo(Obj_AI_Hero target)
         {
 
-            Q.SetSkillshot(getNewQSpeed(), 50f, float.MaxValue, false, SkillshotType.SkillshotLine);
             if (target == null) return;
             useHydra(target);
             if (target.Distance(Player) < 500)
@@ -342,7 +341,7 @@ namespace Yasuo_Sharpino
 
         public static void putWallBehind(Obj_AI_Hero target)
         {
-            if (!W.IsReady() || !E.IsReady())
+            if (!W.IsReady() || !E.IsReady() || target.IsMelee())
                 return;
             Vector2 dashPos = getNextPos(target);
             PredictionOutput po = Prediction.GetPrediction(target, 0.5f);
@@ -403,7 +402,7 @@ namespace Yasuo_Sharpino
                 if (YasuoSharp.Config.Item("useElh").GetValue<bool>() && minion.Health < Player.GetSpellDamage(minion, E.Slot))
                     useENormal(minion);
 
-                if (YasuoSharp.Config.Item("useQlh").GetValue<bool>() && !isQEmpovered() && HealthPrediction.LaneClearHealthPrediction(minion, (int)(getNewQSpeed() * 1000)) < Player.GetSpellDamage(minion, Q.Slot))
+                if (YasuoSharp.Config.Item("useQlh").GetValue<bool>() && !isQEmpovered() && minion.Health < Player.GetSpellDamage(minion, Q.Slot))
                     if (!(target != null && isQEmpovered() && Player.Distance(target) < 1050))
                     {
                         if (canCastFarQ())
@@ -414,7 +413,7 @@ namespace Yasuo_Sharpino
 
         public static void doLaneClear(Obj_AI_Hero target)
         {
-            List<Obj_AI_Base> minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 800,MinionTypes.All,MinionTeam.NotAlly);
+            List<Obj_AI_Base> minions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 1000,MinionTypes.All,MinionTeam.NotAlly);
             if (YasuoSharp.Config.Item("useElc").GetValue<bool>() && E.IsReady())
                 foreach (var minion in minions.Where(minion => minion.IsValidTarget(E.Range) && enemyIsJumpable(minion)))
                 {
@@ -454,7 +453,7 @@ namespace Yasuo_Sharpino
                 {
                     if (!isDashigPro)
                     {
-                        List<Vector2> minionPs = YasMath.GetCastMinionsPredictedPositions(minions, getNewQSpeed() * 0.3f, 30f, 1800f, Player.ServerPosition, 465, false, SkillshotType.SkillshotLine);
+                        List<Vector2> minionPs = YasMath.GetCastMinionsPredictedPositions(minions, getNewQSpeed() * 0.3f, 30f, float.MaxValue, Player.ServerPosition, 465, false, SkillshotType.SkillshotLine);
                         Vector2 clos = Geometry.Closest(Player.ServerPosition.To2D(), minionPs);
                         if (Player.Distance(clos) < 475)
                         {
@@ -831,9 +830,11 @@ namespace Yasuo_Sharpino
         {
             if (!E.IsReady() )
                 return false;
+            Vector2 posAfter = V2E(Player.Position, target.Position, 475);
             if (!YasuoSharp.Config.Item("djTur").GetValue<bool>())
             {
-                E.Cast(target, false);
+                if (isSafePoint(posAfter).IsSafe)
+                    E.Cast(target, false);
                 return true;
             }
             else
@@ -843,7 +844,8 @@ namespace Yasuo_Sharpino
                 Vector2 posAfterE = pPos + (Vector2.Normalize(target.Position.To2D() - pPos)*E.Range);
                 if (!inTowerRange(posAfterE))
                 {
-                    E.Cast(target, false);
+                    if (isSafePoint(posAfter).IsSafe)
+                        E.Cast(target, false);
                     return true;
                 }
             }
@@ -949,7 +951,7 @@ namespace Yasuo_Sharpino
                         aroundAir++;
 
                 }
-                if (aroundAir >= YasuoSharp.Config.Item("useRHit").GetValue<Slider>().Value && timeToLand<0.1f)
+                if (aroundAir >= YasuoSharp.Config.Item("useRHit").GetValue<Slider>().Value && timeToLand<0.4f)
                     R.Cast(enem);
             }
         }

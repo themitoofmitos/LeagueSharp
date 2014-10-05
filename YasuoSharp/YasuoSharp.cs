@@ -16,6 +16,7 @@ using LeagueSharp.Common;
  * Auto level                            <-- done
  * Overkill minions too
  * 
+ * add targetted spells to block
  * 
  * auto R on killables
  * 
