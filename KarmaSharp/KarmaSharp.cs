@@ -73,9 +73,9 @@ namespace KarmaSharp
                 Config.SubMenu("extra").AddItem(new MenuItem("useMinions", "Use minions on Q")).SetValue(true);
 				//Donate
                 Config.AddSubMenu(new Menu("Donate", "Donate"));
-                Config.SubMenu("debug").AddItem(new MenuItem("domateMe", "PayPal:")).SetValue(true);
-                Config.SubMenu("debug").AddItem(new MenuItem("domateMe2", "dtk600@gmail.com")).SetValue(true);
-                Config.SubMenu("debug").AddItem(new MenuItem("domateMe3", "Tnx ^.^")).SetValue(true);
+                Config.SubMenu("Donate").AddItem(new MenuItem("domateMe", "PayPal:")).SetValue(true);
+                Config.SubMenu("Donate").AddItem(new MenuItem("domateMe2", "dtk600@gmail.com")).SetValue(true);
+                Config.SubMenu("Donate").AddItem(new MenuItem("domateMe3", "Tnx ^.^")).SetValue(true);
 
                 //Debug
               //  Config.AddSubMenu(new Menu("Debug", "debug"));

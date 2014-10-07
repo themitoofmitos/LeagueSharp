@@ -32,26 +32,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="clipper_library">
-      <HintPath>..\..\..\Assemblies\System\clipper_library.dll</HintPath>
-    </Reference>
     <Reference Include="LeagueSharp">
-      <HintPath>..\..\..\Assemblies\System\LeagueSharp.dll</HintPath>
+      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>..\..\..\Assemblies\System\LeagueSharp.Common.dll</HintPath>
+      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\Assemblies\System\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\..\..\Assemblies\System\SharpDX.Direct3D9.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Toolkit">
-      <HintPath>..\..\..\Assemblies\System\SharpDX.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Toolkit.Graphics">
-      <HintPath>..\..\..\Assemblies\System\SharpDX.Toolkit.Graphics.dll</HintPath>
+      <HintPath>..\..\..\Users\DETUKS\Desktop\ToolSet\L#Loader++\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
