@@ -142,7 +142,7 @@ namespace RivenSharp
            // Console.WriteLine("obj: " + obj.Name + " - " + prop.NewValue);
         }
 
-        public static void OnPlayAnimation(Obj_AI_Base value0, GameObjectPlayAnimationEventArgs value1)
+        public static void OnPlayAnimation(LeagueSharp.GameObject value0, GameObjectPlayAnimationEventArgs value1)
         {
            // if (value1.Animation.Contains("Spell"))
            // {
