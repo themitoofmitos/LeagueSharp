@@ -156,7 +156,7 @@ namespace KhazixSharp
 
         }
 
-        public static void OnPlayAnimation(Obj_AI_Base value0, GameObjectPlayAnimationEventArgs value1)
+        public static void OnPlayAnimation(LeagueSharp.GameObject value0, GameObjectPlayAnimationEventArgs value1)
         {
             
         }
