@@ -32,6 +32,7 @@ using LeagueSharp.Common;
  */
 using Rive;
 using SharpDX;
+using SharpDX.Direct3D9;
 using Color = System.Drawing.Color;
 
 namespace RivenSharp
@@ -42,6 +43,7 @@ namespace RivenSharp
         public const string CharName = "Riven";
 
         public static Menu Config;
+
 
         public static HpBarIndicator hpi = new HpBarIndicator();
         
@@ -82,6 +84,7 @@ namespace RivenSharp
             Config.AddSubMenu(new Menu("Combo Sharp", "combo"));
             Config.SubMenu("combo").AddItem(new MenuItem("comboItems", "Use Items")).SetValue(true);
             Config.SubMenu("combo").AddItem(new MenuItem("forceQE", "Use Q after E")).SetValue(true);
+            Config.SubMenu("combo").AddItem(new MenuItem("packets", "Use packet cast")).SetValue(true);
 
             //Haras
             Config.AddSubMenu(new Menu("Harass Sharp", "haras"));
@@ -100,6 +103,7 @@ namespace RivenSharp
             Config.AddToMainMenu();
 
             Drawing.OnDraw += onDraw;
+            Drawing.OnEndScene += OnEndScene;
             Game.OnGameUpdate += OnGameUpdate;
 
             GameObject.OnCreate += OnCreateObject;
@@ -116,6 +120,22 @@ namespace RivenSharp
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+        }
+
+        private static void OnEndScene(EventArgs args)
+        {
+            if (Config.Item("drawHp").GetValue<bool>())
+            {
+                foreach (
+                    var enemy in
+                        ObjectManager.Get<Obj_AI_Hero>()
+                            .Where(ene => !ene.IsDead && ene.IsEnemy && ene.IsVisible))
+                {
+                    hpi.unit = enemy;
+                    hpi.drawDmg(Riven.rushDmgBasedOnDist(enemy), Color.Yellow);
+
+                }
             }
         }
 
@@ -163,6 +183,7 @@ namespace RivenSharp
         {
             try
             {
+
                 if (!Config.Item("doDraw").GetValue<bool>())
                 {
 
@@ -290,7 +311,8 @@ namespace RivenSharp
                             Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(Game.CursorPos.X, Game.CursorPos.Y)).Send();
                             if (LXOrbwalker.GetPossibleTarget() != null)
                             {
-                                Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(LXOrbwalker.GetPossibleTarget().Position.X, LXOrbwalker.GetPossibleTarget().Position.Y)).Send();
+                                Riven.moveTo(LXOrbwalker.GetPossibleTarget().Position);
+                                //Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(LXOrbwalker.GetPossibleTarget().Position.X, LXOrbwalker.GetPossibleTarget().Position.Y)).Send();
 
                                // LXOrbwalker.ResetAutoAttackTimer();
                                 Riven.cancelAnim(true);
@@ -318,13 +340,10 @@ namespace RivenSharp
                         int sourceId = packet.ReadInteger();
                         if (packet.Size() == 9 && sourceId == Riven.Player.NetworkId)
                         {
-
+                            Riven.moveTo(Game.CursorPos);
                             Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(Game.CursorPos.X, Game.CursorPos.Y)).Send();
-                                Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(0, 0, 3,
-                                 LXOrbwalker.GetPossibleTarget().NetworkId)).Send();
                             LXOrbwalker.ResetAutoAttackTimer();
                             Riven.cancelAnim();
-                            
                         }
                     }
                 }

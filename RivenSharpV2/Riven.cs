@@ -145,7 +145,7 @@ namespace RivenSharp
 
         public static void gapWithQ(Obj_AI_Base target)
         {
-            if((E.IsReady() || !Q.IsReady() || Player.IsAutoAttacking) && !rushDown)
+            if ((E.IsReady() || !Q.IsReady() || Player.IsAutoAttacking || !LXOrbwalker.CanAttack() || target.Distance(Player.ServerPosition)<Player.AttackRange) && !rushDown)
                 return;
             reachWithQ(target);
         }
@@ -205,7 +205,7 @@ namespace RivenSharp
             {
                 R.Cast();
             }
-            else if (canUseWindSlash() && target is Obj_AI_Hero && (!(E.IsReady() && Player.IsDashing())|| Player.Distance(target)>150 ))
+            else if (canUseWindSlash() && LXOrbwalker.CanAttack() && target is Obj_AI_Hero && (!(E.IsReady() && Player.IsDashing()) || Player.Distance(target) > 150))
             {   
                 var targ = target as Obj_AI_Hero;   
                 PredictionOutput po = R.GetPrediction(targ, true);
@@ -305,7 +305,13 @@ namespace RivenSharp
             return (float)Player.CalcDamage(target,Damage.DamageType.Physical, baseDmg * multiplier);
         }
 
-
+        public static void moveTo(Vector3 pos)
+        {
+            if (RivenSharp.Config.Item("forceQE").GetValue<bool>())
+                Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(pos.X, pos.Y)).Send();
+            else
+                Player.IssueOrder(GameObjectOrder.MoveTo,pos);
+        }
 
         public static void cancelAnim(bool aaToo=false)
         {
@@ -319,8 +325,8 @@ namespace RivenSharp
                     Riven.useWSmart(LXOrbwalker.GetPossibleTarget());
 
             }
+            moveTo(Game.CursorPos);
             //Game.Say("/l");
-            Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(Game.CursorPos.X, Game.CursorPos.Y)).Send();
 
 
            //  Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(fill iterator up)).Send();
