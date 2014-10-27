@@ -35,6 +35,8 @@ namespace RivenSharp
 
         public static bool rushDown = false;
 
+        public static bool rushDownQ = false;
+
         public static bool forceQ = false;
 
         public static void setSkillshots()
@@ -59,6 +61,7 @@ namespace RivenSharp
             }
 
             igniteIfKIllable(target);
+            rushDownQ = rushDmgBasedOnDist(target) * 0.7f > target.Health;
             rushDown = rushDmgBasedOnDist(target)*1.1f > target.Health;
             useRSmart(target);
             if (rushDown)
@@ -145,7 +148,7 @@ namespace RivenSharp
 
         public static void gapWithQ(Obj_AI_Base target)
         {
-            if ((E.IsReady() || !Q.IsReady() || Player.IsAutoAttacking || !LXOrbwalker.CanAttack() || target.Distance(Player.ServerPosition)<Player.AttackRange) && !rushDown)
+            if ((E.IsReady() || !Q.IsReady() || Player.IsAutoAttacking || !LXOrbwalker.CanAttack() || target.Distance(Player.ServerPosition) < Player.AttackRange) && !rushDownQ)
                 return;
             reachWithQ(target);
         }
@@ -205,7 +208,7 @@ namespace RivenSharp
             {
                 R.Cast();
             }
-            else if (canUseWindSlash() && LXOrbwalker.CanAttack() && target is Obj_AI_Hero && (!(E.IsReady() && Player.IsDashing()) || Player.Distance(target) > 150))
+            else if (canUseWindSlash() && target is Obj_AI_Hero && (!(E.IsReady() && Player.IsDashing()) || Player.Distance(target) > 150))
             {   
                 var targ = target as Obj_AI_Hero;   
                 PredictionOutput po = R.GetPrediction(targ, true);
