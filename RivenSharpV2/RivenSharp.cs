@@ -82,7 +82,7 @@ namespace RivenSharp
            Config.AddSubMenu(TargetSelectorMenu);
             //Combo
             Config.AddSubMenu(new Menu("Combo Sharp", "combo"));
-            Config.SubMenu("combo").AddItem(new MenuItem("comboItems", "Use Items")).SetValue(true);
+            Config.SubMenu("combo").AddItem(new MenuItem("useR", "Use Ult in fights")).SetValue(new KeyBind('Z', KeyBindType.Toggle, true));
             Config.SubMenu("combo").AddItem(new MenuItem("forceQE", "Use Q after E")).SetValue(true);
             Config.SubMenu("combo").AddItem(new MenuItem("packets", "Use packet cast")).SetValue(true);
 

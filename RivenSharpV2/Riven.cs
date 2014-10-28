@@ -204,7 +204,7 @@ namespace RivenSharp
         {
             if (!R.IsReady())
                 return;
-            if (!ultIsOn() && !E.IsReady() && target.Distance(Player.ServerPosition)<(Q.Range+target.BoundingRadius))
+            if (!ultIsOn() && RivenSharp.Config.Item("useR").GetValue<KeyBind>().Active && !E.IsReady() && target.Distance(Player.ServerPosition) < (Q.Range + target.BoundingRadius))
             {
                 R.Cast();
             }
