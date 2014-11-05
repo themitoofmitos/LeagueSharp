@@ -45,7 +45,7 @@ namespace JayceSharpV2
         private static void onLoad(EventArgs args)
         {
 
-            Game.PrintChat("Jayce - Sharp by DeTuKs");
+            Game.PrintChat("Jayce - SharpV2 by DeTuKs");
             Jayce.setSkillShots();
             try
             {

@@ -10,6 +10,7 @@ namespace JayceSharpV2
     {
         static void Main(string[] args)
         {
+            new JayceSharp();
         }
     }
 }
