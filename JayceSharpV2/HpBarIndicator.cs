@@ -1,5 +1,8 @@
 ﻿
 using System;
+using System.Drawing;
+using System.IO;
+using System.Net;
 using LeagueSharp;
 using SharpDX;
 using SharpDX.Direct3D9;
@@ -11,6 +14,10 @@ namespace JayceSharpV2
 
         public static SharpDX.Direct3D9.Device dxDevice = Drawing.Direct3DDevice;
         public static SharpDX.Direct3D9.Line dxLine;
+        public static SharpDX.Direct3D9.Sprite sprite;
+        public static SharpDX.Direct3D9.Texture suprise;
+
+
 
         public Obj_AI_Hero unit { get; set; }
 
@@ -18,11 +25,25 @@ namespace JayceSharpV2
 
         public float hight = 9;
 
+        private Bitmap LoadPicture(string url)
+        {
+
+            System.Net.WebRequest request = System.Net.WebRequest.Create(url);
+            System.Net.WebResponse response = request.GetResponse();
+            System.IO.Stream responseStream = response.GetResponseStream();
+            Bitmap bitmap2 = new Bitmap(responseStream);
+            Console.WriteLine(bitmap2.Size);
+            return (bitmap2);
+        }
 
         public HpBarIndicator()
         {
             dxLine = new Line(dxDevice) { Width = 9 };
-
+            sprite = new Sprite(dxDevice);
+            suprise = Texture.FromMemory(
+                    Drawing.Direct3DDevice,
+                    (byte[])new ImageConverter().ConvertTo(LoadPicture("http://i.gyazo.com/b94246fcd45ead6c3e9a0f2a585bb655.png"), typeof(byte[])), 513, 744, 0,
+                    Usage.None, Format.A1, Pool.Managed, Filter.Default, Filter.Default, 0);
             Drawing.OnPreReset += DrawingOnOnPreReset;
             Drawing.OnPostReset += DrawingOnOnPostReset;
             AppDomain.CurrentDomain.DomainUnload += CurrentDomainOnDomainUnload;
@@ -33,17 +54,29 @@ namespace JayceSharpV2
 
         private static void CurrentDomainOnDomainUnload(object sender, EventArgs eventArgs)
         {
+            sprite.Dispose();
             dxLine.Dispose();
         }
 
         private static void DrawingOnOnPostReset(EventArgs args)
         {
             dxLine.OnResetDevice();
+            sprite.OnResetDevice();
         }
 
         private static void DrawingOnOnPreReset(EventArgs args)
         {
+            sprite.OnLostDevice();
             dxLine.OnLostDevice();
+        }
+
+        public void drawAwsomee()
+        {
+            sprite.Begin();
+
+            sprite.Draw(suprise, new ColorBGRA(255, 255, 255, 255), null, new Vector3(-200, -20, 0));
+
+            sprite.End();
         }
 
         private Vector2 Offset

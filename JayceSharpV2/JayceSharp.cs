@@ -64,6 +64,7 @@ namespace JayceSharpV2
                 Config.SubMenu("combo").AddItem(new MenuItem("hammerKill", "Hammer if killable")).SetValue(true);
                 Config.SubMenu("combo").AddItem(new MenuItem("fullDMG", "Do full damage")).SetValue(new KeyBind('A', KeyBindType.Press));
                 Config.SubMenu("combo").AddItem(new MenuItem("injTarget", "Tower Injection")).SetValue(new KeyBind('G', KeyBindType.Press));
+                Config.SubMenu("combo").AddItem(new MenuItem("awsPress", "Press for awsomeee!!")).SetValue(new KeyBind('Z', KeyBindType.Press));
 
                 //Extra
                 Config.AddSubMenu(new Menu("Extra Sharp", "extra"));
@@ -76,6 +77,7 @@ namespace JayceSharpV2
 
                 //Debug
                 Config.AddSubMenu(new Menu("Drawing", "draw"));
+                Config.SubMenu("draw").AddItem(new MenuItem("drawCir", "Draw circles")).SetValue(true);
                 Config.SubMenu("draw").AddItem(new MenuItem("drawCD", "Draw CD")).SetValue(true);
                 Config.SubMenu("draw").AddItem(new MenuItem("drawFull", "Draw full combo dmg")).SetValue(true);
 
@@ -99,6 +101,11 @@ namespace JayceSharpV2
 
         private static void OnEndScene(EventArgs args)
         {
+            if (Config.Item("awsPress").GetValue<KeyBind>().Active)
+            {
+                hpi.drawAwsomee();
+            }
+
             if (Config.Item("drawFull").GetValue<bool>())
                 foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(ene => !ene.IsDead && ene.IsEnemy && ene.IsVisible))
                 {
@@ -186,12 +193,14 @@ namespace JayceSharpV2
 
         private static void onDraw(EventArgs args)
         {
-           
+
 
             //Draw CD
             if (Config.Item("drawCD").GetValue<bool>())
                 Jayce.drawCD();
 
+            if (!Config.Item("drawCir").GetValue<bool>())
+                return;
             Utility.DrawCircle(Jayce.Player.Position, !Jayce.isHammer ? 1100 : 600, Color.Red);
 
             Utility.DrawCircle(Jayce.Player.Position, 1550, Color.Violet);
