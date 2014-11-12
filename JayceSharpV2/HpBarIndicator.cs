@@ -36,6 +36,8 @@ namespace JayceSharpV2
             return (bitmap2);
         }
 
+
+
         public HpBarIndicator()
         {
             dxLine = new Line(dxDevice) { Width = 9 };

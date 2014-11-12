@@ -467,7 +467,7 @@ namespace JayceSharpV2
 
         public static Vector2 getParalelVec(Vector3 pos)
         {
-            var v2 = Vector3.Normalize(pos - Player.ServerPosition) * 3;
+            var v2 = Vector3.Normalize(pos - Player.ServerPosition) * JayceSharp.Config.Item("drawFull").GetValue<Slider>().Value;
             var bom = new Vector2(v2.Y, -v2.X);
             return Player.ServerPosition.To2D() + bom;
         }
