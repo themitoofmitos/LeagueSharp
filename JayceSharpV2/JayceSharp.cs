@@ -65,7 +65,6 @@ namespace JayceSharpV2
                 Config.SubMenu("combo").AddItem(new MenuItem("fullDMG", "Do full damage")).SetValue(new KeyBind('A', KeyBindType.Press));
                 Config.SubMenu("combo").AddItem(new MenuItem("injTarget", "Tower Injection")).SetValue(new KeyBind('G', KeyBindType.Press));
                 Config.SubMenu("combo").AddItem(new MenuItem("awsPress", "Press for awsomeee!!")).SetValue(new KeyBind('Z', KeyBindType.Press));
-                Config.SubMenu("combo").AddItem(new MenuItem("eAway", "Gate distance from side")).SetValue(new Slider(20,3,60));
 
                 //Extra
                 Config.AddSubMenu(new Menu("Extra Sharp", "extra"));
