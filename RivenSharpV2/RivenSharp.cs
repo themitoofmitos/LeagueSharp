@@ -69,6 +69,7 @@ namespace RivenSharp
         {
             try
             {
+                if (Riven.Player.ChampionName != "Riven") return;
 
             Game.PrintChat("RivenSharp by DeTuKs");
             Config = new Menu("Riven - Sharp", "Riven", true);
@@ -82,7 +83,6 @@ namespace RivenSharp
            Config.AddSubMenu(TargetSelectorMenu);
             //Combo
             Config.AddSubMenu(new Menu("Combo Sharp", "combo"));
-            Config.SubMenu("combo").AddItem(new MenuItem("useR", "Use Ult in fights")).SetValue(new KeyBind('Z', KeyBindType.Toggle, true));
             Config.SubMenu("combo").AddItem(new MenuItem("forceQE", "Use Q after E")).SetValue(true);
             Config.SubMenu("combo").AddItem(new MenuItem("packets", "Use packet cast")).SetValue(true);
 
@@ -232,7 +232,8 @@ namespace RivenSharp
         {
             if (Config.Item("doHarasE").GetValue<KeyBind>().Active ||
                 Config.Item("doHarasQ").GetValue<KeyBind>().Active
-                || LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Combo)
+                || LXOrbwalker.CurrentMode == LXOrbwalker.Mode.Combo || 
+                LXOrbwalker.CurrentMode == LXOrbwalker.Mode.LaneClear)
             {
                 return true;
             }
