@@ -355,26 +355,33 @@ namespace JayceSharpV2
 
         public static bool shootQE(Vector3 pos)
         {
-            if (isHammer && R2.IsReady())
-                R2.Cast();
-            if (!E1.IsReady() || !Q1.IsReady() || isHammer)
-                return false;
-
-            if (JayceSharp.Config.Item("packets").GetValue<bool>())
+            try
             {
-                packetCastQ(pos.To2D());
-                packetCastE(getParalelVec(pos));
+                if (isHammer && R2.IsReady())
+                    R2.Cast();
+                if (!E1.IsReady() || !Q1.IsReady() || isHammer)
+                    return false;
+
+                if (JayceSharp.Config.Item("packets").GetValue<bool>())
+                {
+                    packetCastQ(pos.To2D());
+                    packetCastE(getParalelVec(pos));
+                }
+                else
+                {
+                    Vector3 bPos = Player.ServerPosition - Vector3.Normalize(pos - Player.ServerPosition)*50;
+
+                    Player.IssueOrder(GameObjectOrder.MoveTo, bPos);
+                    Q1.Cast(pos);
+
+                    E1.Cast(getParalelVec(pos));
+                }
+
             }
-            else
+            catch (Exception ex)
             {
-                Vector3 bPos = Player.ServerPosition - Vector3.Normalize(pos - Player.ServerPosition) * 50;
-
-                Player.IssueOrder(GameObjectOrder.MoveTo, bPos);
-                Q1.Cast(pos);
-
-                E1.Cast(getParalelVec(pos));
+                Console.WriteLine(ex);
             }
-
             return true;
         }
 
@@ -467,7 +474,12 @@ namespace JayceSharpV2
 
         public static Vector2 getParalelVec(Vector3 pos)
         {
-            var v2 = Vector3.Normalize(pos - Player.ServerPosition) * 3;
+            Random rnd = new Random();
+            int neg = rnd.Next(0, 1);
+            int away = JayceSharp.Config.Item("eAway").GetValue<Slider>().Value;
+            away = (neg == 1) ? away : -away;
+
+            var v2 = Vector3.Normalize(pos - Player.ServerPosition) * away;
             var bom = new Vector2(v2.Y, -v2.X);
             return Player.ServerPosition.To2D() + bom;
         }
