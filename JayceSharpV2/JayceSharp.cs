@@ -194,8 +194,6 @@ namespace JayceSharpV2
 
         private static void onDraw(EventArgs args)
         {
-
-
             //Draw CD
             if (Config.Item("drawCD").GetValue<bool>())
                 Jayce.drawCD();

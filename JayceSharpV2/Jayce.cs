@@ -187,7 +187,7 @@ namespace JayceSharpV2
             {
                 castIgnite(target);
 
-                if (inMyTowerRange(posAfterHammer(target)) && E2.IsReady())
+                if (/*inMyTowerRange(posAfterHammer(target)) &&*/ E2.IsReady())
                     E2.Cast(target);
 
                 //If not in flash range  Q to get in it
@@ -196,10 +196,10 @@ namespace JayceSharpV2
 
                 if (!E2.IsReady() && !Q2.IsReady())
                     R2.Cast();
-
-                if (Player.Distance(getBestPosToHammer(target)) < 400)
+                Obj_AI_Base tower = ObjectManager.Get<Obj_AI_Turret>().Where(tur => tur.IsAlly && tur.Health > 0).OrderBy(tur => Player.Distance(tur)).First();
+                if (Player.Distance(getBestPosToHammer(target.ServerPosition)) < 400 && tower.Distance(target)<1500)
                 {
-                    Player.SummonerSpellbook.CastSpell(Player.GetSpellSlot("SummonerFlash"), getBestPosToHammer(target));
+                    Player.SummonerSpellbook.CastSpell(Player.GetSpellSlot("SummonerFlash"), getBestPosToHammer(target.ServerPosition));
                 }
                 Player.IssueOrder(GameObjectOrder.AttackUnit, target);
             }
@@ -225,6 +225,12 @@ namespace JayceSharpV2
                 }
             }
         }
+
+      /*  public static Vector3 posAfterInj(Obj_AI_Base target)
+        {
+            Vector3 ve = getBestPosToHammer(target.ServerPosition);
+            return posAfterHammer()
+        }*/
 
 
         public static void doKillSteal()
@@ -304,15 +310,15 @@ namespace JayceSharpV2
             }
         }
 
-        public static Vector3 getBestPosToHammer(Obj_AI_Hero target)
+        public static Vector3 getBestPosToHammer(Vector3 target)
         {
             Obj_AI_Base tower = ObjectManager.Get<Obj_AI_Turret>().Where(tur => tur.IsAlly && tur.Health > 0).OrderBy(tur => Player.Distance(tur)).First();
-            return target.ServerPosition + Vector3.Normalize(tower.ServerPosition - target.ServerPosition) * (-120);
+            return target + Vector3.Normalize(tower.ServerPosition - target) * (-120);
         }
 
         public static Vector3 posAfterHammer(Obj_AI_Base target)
         {
-            return Player.ServerPosition + Vector3.Normalize(target.ServerPosition - Player.ServerPosition) * 600;
+            return getBestPosToHammer(target.ServerPosition) + Vector3.Normalize(getBestPosToHammer(target.ServerPosition) - Player.ServerPosition) * 600;
         }
 
         public static Obj_AI_Hero getClosestEnem()
