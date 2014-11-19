@@ -42,6 +42,7 @@ namespace HypaJungle
         public ItemToShop nextItem;
 
         public float dpsFix = 0;
+        public int buffPriority = 7;
 
         public abstract void setUpSpells();
         public abstract void setUpItems();

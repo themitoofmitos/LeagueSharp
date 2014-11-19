@@ -36,7 +36,10 @@ namespace HypaJungle
 
         public HypaJungle()
         {
+          
+
             CustomEvents.Game.OnGameLoad += onLoad;
+
         }
 
         private static void onLoad(EventArgs args)
@@ -45,6 +48,12 @@ namespace HypaJungle
             Game.PrintChat("HypaJungle by DeTuKs");
             try
             {
+                if (!JungleClearer.supportedChamps.Contains(player.ChampionName))
+                {
+                    Game.PrintChat("Sory this champion is not supported yet! go vote for it in forum ;)");
+                    return;
+                }
+
                 jTimer = new JungleTimers();
 
                 Config = new Menu("HypeJungle", "hype", true);

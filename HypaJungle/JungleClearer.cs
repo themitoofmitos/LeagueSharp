@@ -22,6 +22,8 @@ namespace HypaJungle
             DoSomeHealing
         }
 
+        public static List<String> supportedChamps = new List<string>{"MasterYi","Udyr","Warwick"}; 
+
 
         public static Obj_AI_Hero player = ObjectManager.Player;
 
@@ -38,7 +40,7 @@ namespace HypaJungle
         {
             switch (player.ChampionName.ToLower())
             {
-                case("warwick_wip"):
+                case("warwick"):
                     jungler = new Warwick();
                     Game.PrintChat("Warwick loaded");
                     break;
@@ -46,7 +48,7 @@ namespace HypaJungle
                     jungler = new MasterYi();
                     Game.PrintChat("MasterYi loaded");
                     break;
-                case "udyr_wip":
+                case "udyr":
                     jungler = new Udyr();
                     Game.PrintChat("Udyr loaded");
                     break;
@@ -277,7 +279,7 @@ namespace HypaJungle
 
             priority += (int)timeToCamp;
             priority += (int) timeTillSpawn;
-            priority -= (camp.isBuff) ? 10 : 0;
+            priority -= (camp.isBuff) ? jungler.buffPriority : 0;
             //if(!camp.isBuff)
               //  priority -= (isInBuffWay(camp)) ? 10 : 0;
 

@@ -63,14 +63,8 @@ namespace HypaJungle
                 },
                 new ItemToShop()
                 {
-                    goldReach = 675,
-                    itemsMustHave = new List<int>{3154},
-                    itemIds = new List<int>{3006}
-                },
-                new ItemToShop()
-                {
                     goldReach = 800,
-                    itemsMustHave = new List<int>{3006},
+                    itemsMustHave = new List<int>{3154},
                     itemIds = new List<int>{1053}
                 },
                 new ItemToShop()
@@ -81,28 +75,11 @@ namespace HypaJungle
                 },
                 new ItemToShop()
                 {
-                    goldReach = 1800,
+                    goldReach = 9999999,
                     itemsMustHave = new List<int>{3144},
-                    itemIds = new List<int>{3153}
-                },
-                new ItemToShop()
-                {
-                    goldReach = 1337,
-                    itemsMustHave = new List<int>{3153},
-                    itemIds = new List<int>{3134}
-                },
-                new ItemToShop()
-                {
-                    goldReach = 1363,
-                    itemsMustHave = new List<int>{3134},
-                    itemIds = new List<int>{3142}
-                },
-                new ItemToShop()
-                {
-                    goldReach = 999999,
-                    itemsMustHave = new List<int>{3142},
                     itemIds = new List<int>{}
-                },
+                }
+          
             };
             #endregion
 
@@ -139,7 +116,7 @@ namespace HypaJungle
             if (minion == null || !minion.IsValid || !minion.IsVisible)
                 return;
 
-            if (minion.Health / getDPS(minion) > 10 || (JungleClearer.focusedCamp.isBuff && minion.MaxHealth>=1400))
+            if (minion.Health / getDPS(minion) > ((JungleClearer.getBestBuffCamp()==null)?7:4) || (JungleClearer.focusedCamp.isBuff && minion.MaxHealth >= 1400))
                 castSmite(minion);
 
             player.IssueOrder(GameObjectOrder.AttackUnit, minion);
