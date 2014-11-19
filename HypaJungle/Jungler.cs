@@ -27,6 +27,8 @@ namespace HypaJungle
             public List<int> itemsMustHave;
         }
 
+        public static bool canBuyItems = true;
+
         private SpellSlot smite = player.GetSpellSlot("SummonerSmite");
 
         
@@ -139,12 +141,19 @@ namespace HypaJungle
 
         public void checkItems()
         {
+            if (!canBuyItems)
+                return;
             for (int i = buyThings.Count - 1; i >= 0; i--)
             {
                 bool hasThemAll = buyThings[i].itemsMustHave.All(item => Items.HasItem(item));
                 if (hasThemAll)
                 {
                     nextItem = buyThings[i];
+                    if (i == buyThings.Count - 1)
+                    {
+                        canBuyItems = false;
+                    }
+
                     return;
                 }
             }

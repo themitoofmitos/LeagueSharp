@@ -122,7 +122,7 @@ namespace HypaJungle
 
         public override void castWhenNear(JungleCamp camp)
         {
-            throw new NotImplementedException();
+
         }
 
         public override void doWhileRunningIdlin()

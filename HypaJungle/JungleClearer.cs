@@ -111,7 +111,10 @@ namespace HypaJungle
 
             if (jcState == JungleCleanState.AttackingMinions && isCampFinished())
             {
-                jcState = JungleCleanState.GoingToShop;
+                if(HypaJungle.Config.Item("autoBuy").GetValue<bool>())
+                    jcState = JungleCleanState.GoingToShop;
+                else
+                    jcState = JungleCleanState.SearchingBestCamp;
             }
 
             if (jcState == JungleCleanState.GoingToShop)
@@ -281,7 +284,7 @@ namespace HypaJungle
 
             if (!jungler.canKill(camp))
                 priority += 999;
-
+            priority -= camp.bonusPrio;
             priority += (int)timeToCamp;
             priority += (int) timeTillSpawn;
             priority -= (camp.isBuff) ? jungler.buffPriority : 0;

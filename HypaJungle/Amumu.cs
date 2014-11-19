@@ -31,7 +31,7 @@ namespace HypaJungle
         public override void setUpItems()
         {
             #region itemsToBuyList
-            buyThings = new List<ItemToShop>
+           buyThings = new List<ItemToShop>
             {
                  new ItemToShop()
                 {
@@ -41,38 +41,26 @@ namespace HypaJungle
                 },
                 new ItemToShop()
                 {
-                    goldReach = 485,
+                    goldReach = 470,
                     itemsMustHave = new List<int>{1039},
-                    itemIds = new List<int>{3106,2003}
+                    itemIds = new List<int>{1080,2003,2003}
                 },
                 new ItemToShop()
                 {
-                    goldReach = 775,
-                    itemsMustHave = new List<int>{3106},
-                    itemIds = new List<int>{1042,1001}
+                    goldReach = 890,
+                    itemsMustHave = new List<int>{1080},
+                    itemIds = new List<int>{3108,2003,2003}
                 },
                 new ItemToShop()
                 {
-                    goldReach = 575,
-                    itemsMustHave = new List<int>{1042,1001},
-                    itemIds = new List<int>{3154}
-                },
-                new ItemToShop()
-                {
-                    goldReach = 800,
-                    itemsMustHave = new List<int>{3154},
-                    itemIds = new List<int>{1053}
-                },
-                new ItemToShop()
-                {
-                    goldReach = 600,
-                    itemsMustHave = new List<int>{1053},
-                    itemIds = new List<int>{3144}
+                    goldReach = 805,
+                    itemsMustHave = new List<int>{3108},
+                    itemIds = new List<int>{3206,1001}
                 },
                 new ItemToShop()
                 {
                     goldReach = 9999999,
-                    itemsMustHave = new List<int>{3144},
+                    itemsMustHave = new List<int>{3206},
                     itemIds = new List<int>{}
                 }
             };

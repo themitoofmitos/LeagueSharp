@@ -55,6 +55,7 @@ namespace HypaJungle
         public int dps = 0;
         public int health = 0;
         public byte campId;
+        public int bonusPrio = 0;
     }
 
     internal class JungleMinion
@@ -118,7 +119,8 @@ namespace HypaJungle
                 team = 0,
                 dps = (int)(75*0.64f),
                 health = 1400,
-                campId = 13
+                campId = 13,
+                bonusPrio = 3
             },
             new JungleCamp //Blue
             {
@@ -198,7 +200,8 @@ namespace HypaJungle
                 isBuff = false,
                 isDragBaron = false,
                 team = 0,
-                campId = 5
+                campId = 5,
+                bonusPrio = 3
             },
             //Chaos
             new JungleCamp //Golems
@@ -214,7 +217,8 @@ namespace HypaJungle
                 isBuff = true,
                 isDragBaron = true,
                 team = 1,
-                campId = 11
+                campId = 11,
+                bonusPrio = 3
             },
             new JungleCamp //Red
             {
@@ -296,7 +300,8 @@ namespace HypaJungle
                 team = 1,
                 dps = (int)(75*0.64f),
                 health = 1400,
-                campId = 14
+                campId = 14,
+                bonusPrio = 3
             }
         };
 

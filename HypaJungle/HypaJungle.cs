@@ -57,6 +57,10 @@ namespace HypaJungle
                 jTimer = new JungleTimers();
 
                 Config = new Menu("HypeJungle", "hype", true);
+                Config.AddSubMenu(new Menu("Jungler", "jungler"));
+                Config.SubMenu("jungler").AddItem(new MenuItem("autoLVL", "Auto Level")).SetValue(true);
+                Config.SubMenu("jungler").AddItem(new MenuItem("autoBuy", "Auto Buy")).SetValue(true);
+
                 Config.AddSubMenu(new Menu("Debug stuff", "debug"));
                 Config.SubMenu("debug").AddItem(new MenuItem("doJungle", "Do jungle")).SetValue(new KeyBind('J', KeyBindType.Toggle));
                 Config.SubMenu("debug").AddItem(new MenuItem("debugOn", "Debug stuff")).SetValue(new KeyBind('A', KeyBindType.Press));
@@ -101,7 +105,8 @@ namespace HypaJungle
 
         private static void OnLevelUp(Obj_AI_Base sender, CustomEvents.Unit.OnLevelUpEventArgs args)
         {
-            JungleClearer.jungler.levelUp(sender,args);
+            if (Config.Item("autoLVL").GetValue<bool>())
+                JungleClearer.jungler.levelUp(sender,args);
         }
 
         private static void OnGameUpdate(EventArgs args)
