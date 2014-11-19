@@ -119,6 +119,9 @@ namespace HypaJungle
 
             if (jcState == JungleCleanState.GoingToShop)
             {
+                if (!HypaJungle.Config.Item("autoBuy").GetValue<bool>())
+                    jcState = JungleCleanState.SearchingBestCamp;
+
                 if (jungler.inSpwan() && player.IsChanneling)
                 {
                     Vector3 stopRecPos = new Vector3(6, 30, 2);
