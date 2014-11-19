@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Amumu.cs" />
+    <Compile Include="ConfigLoader.cs" />
     <Compile Include="HypaJungle.cs" />
     <Compile Include="JungleClearer.cs" />
     <Compile Include="Jungler.cs" />

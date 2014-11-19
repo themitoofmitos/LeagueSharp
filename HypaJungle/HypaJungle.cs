@@ -48,6 +48,8 @@ namespace HypaJungle
             Game.PrintChat("HypaJungle by DeTuKs");
             try
             {
+                ConfigLoader.setupFolders(JungleClearer.supportedChamps);
+
                 if (!JungleClearer.supportedChamps.Contains(player.ChampionName))
                 {
                     Game.PrintChat("Sory this champion is not supported yet! go vote for it in forum ;)");
@@ -57,6 +59,11 @@ namespace HypaJungle
                 jTimer = new JungleTimers();
 
                 Config = new Menu("HypeJungle", "hype", true);
+
+                Config.AddSubMenu(new Menu("Jungler Config", "junglerCon"));
+                Config.SubMenu("junglerCon").AddItem(new MenuItem("blabla", "Relead to work!")).SetValue(true);
+                Config.SubMenu("junglerCon").AddItem(new MenuItem("useDefConf", "Use Default Config")).SetValue(true);
+                Config.SubMenu("junglerCon").AddItem(new MenuItem("fileConfigHypa", "")).SetValue(ConfigLoader.getChampionConfigs(player.ChampionName));
                 Config.AddSubMenu(new Menu("Jungler", "jungler"));
                 Config.SubMenu("jungler").AddItem(new MenuItem("autoLVL", "Auto Level")).SetValue(true);
                 Config.SubMenu("jungler").AddItem(new MenuItem("autoBuy", "Auto Buy")).SetValue(true);
@@ -68,6 +75,9 @@ namespace HypaJungle
                 Config.SubMenu("debug").AddItem(new MenuItem("showPrio", "Show priorities")).SetValue(false);
 
                 Config.AddToMainMenu();
+
+               
+
                 Game.OnGameUpdate += OnGameUpdate;
                 Drawing.OnDraw += onDraw;
                 CustomEvents.Unit.OnLevelUp += OnLevelUp;
@@ -75,10 +85,19 @@ namespace HypaJungle
                 Game.OnGameProcessPacket += Game_OnGameProcessPacket;
                 JungleClearer.setUpJCleaner();
 
+                //Load custom stuff
+                if (!Config.Item("useDefConf").GetValue<bool>())
+                    ConfigLoader.loadNewConfigHypa(
+                       Config.Item("fileConfigHypa").GetValue<StringList>().SList[
+                           Config.Item("fileConfigHypa").GetValue<StringList>().SelectedIndex]);
+                JungleClearer.jungler.setFirstLvl();
+
+
             }
-            catch
+            catch(Exception ex)
             {
                 Game.PrintChat("Oops. Something went wrong with HypaJungle");
+                Console.WriteLine(ex);
             }
 
         }
@@ -123,10 +142,7 @@ namespace HypaJungle
 
             if (Config.Item("debugOn").GetValue<KeyBind>().Active) //fullDMG
             {
-                foreach (var buf in player.Buffs)
-                {
-                    Console.WriteLine(buf.Name);
-                }
+                Console.WriteLine("BuyThings: "+JungleClearer.jungler.buyThings.First().goldReach);
             }
             if (Config.Item("doJungle").GetValue<KeyBind>().Active) //fullDMG
             {

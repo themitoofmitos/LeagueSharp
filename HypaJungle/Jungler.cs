@@ -73,6 +73,12 @@ namespace HypaJungle
 
         public abstract bool canMove();
 
+
+        public Jungler()
+        {
+
+        }
+
         public void castSmite(Obj_AI_Base target)
         {
            // smite = player.GetSpellSlot("SummonerSmite");
@@ -82,7 +88,6 @@ namespace HypaJungle
 
         public void startAttack(Obj_AI_Minion minion)
         {
-
             usePots();
 
             if (minion == null || !minion.IsValid || !minion.IsVisible)
@@ -119,6 +124,11 @@ namespace HypaJungle
             {
                 
             }
+        }
+
+        public void setFirstLvl()
+        {
+            sBook.LevelUpSpell(levelUpSeq[0].Slot);
         }
 
         public void levelUp(Obj_AI_Base sender, CustomEvents.Unit.OnLevelUpEventArgs args)

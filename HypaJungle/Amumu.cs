@@ -102,7 +102,7 @@ namespace HypaJungle
 
         public override void UseE(Obj_AI_Minion minion)
         {
-            if (E.IsReady() && minion.Distance(player) < 340+minion.BoundingRadius && E.GetDamage(minion)>minion.Health)
+            if (E.IsReady() && minion.Distance(player) < 340+minion.BoundingRadius && E.GetDamage(minion)*0.7f<minion.Health)
             {
                 E.Cast();
             }
