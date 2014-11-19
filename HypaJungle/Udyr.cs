@@ -112,17 +112,17 @@ namespace HypaJungle
 
         public override void attackMinion(Obj_AI_Minion minion)
         {
-            if (minion == null || !minion.IsValid || !minion.IsVisible)
-                return;
-
-            if (minion.Health / getDPS(minion) > ((JungleClearer.getBestBuffCamp() == null) ? 7 : 4) || (JungleClearer.focusedCamp.isBuff && minion.MaxHealth >= 1400))
-                castSmite(minion);
 
             UseQ(minion);
             player.IssueOrder(GameObjectOrder.AttackUnit, minion);
             UseW(minion);
             UseE(minion);
             UseR(minion);
+        }
+
+        public override void castWhenNear(JungleCamp camp)
+        {
+            throw new NotImplementedException();
         }
 
         public override void doWhileRunningIdlin()

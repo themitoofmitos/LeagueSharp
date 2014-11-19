@@ -11,6 +11,14 @@ namespace HypaJungle
 {
     abstract class Jungler
     {
+        //Ty tc-crew
+        private enum PotionType
+        {
+            Health = 2003,
+            Mana = 2004,
+            Biscuit = 2009,
+            CrystalFlask = 2041,
+        }
 
         internal class ItemToShop
         {
@@ -43,6 +51,7 @@ namespace HypaJungle
 
         public float dpsFix = 0;
         public int buffPriority = 7;
+        public bool gotMana = true;
 
         public abstract void setUpSpells();
         public abstract void setUpItems();
@@ -53,6 +62,7 @@ namespace HypaJungle
         public abstract void UseR(Obj_AI_Minion minion);
 
         public abstract void attackMinion(Obj_AI_Minion minion);
+        public abstract void castWhenNear(JungleCamp camp);
 
         public abstract void doWhileRunningIdlin();
 
@@ -68,9 +78,45 @@ namespace HypaJungle
                 player.SummonerSpellbook.CastSpell(smite, target);
         }
 
-        public static void usePots()
+        public void startAttack(Obj_AI_Minion minion)
         {
-            
+
+            usePots();
+
+            if (minion == null || !minion.IsValid || !minion.IsVisible)
+                return;
+
+            if (minion.Health / getDPS(minion) > ((JungleClearer.getBestBuffCamp() == null) ? 7 : 4) || (JungleClearer.focusedCamp.isBuff && minion.MaxHealth >= 1400))
+                castSmite(minion);
+
+            attackMinion(minion);
+        }
+
+        public void usePots()
+        {
+            if (player.Health / player.MaxHealth <= 0.6f && !player.HasBuff("Health Potion"))
+                CastPotion(PotionType.Health);
+
+            // Mana Potion
+            if(!gotMana) return;
+
+            if (player.Mana / player.MaxMana <= 0.3f && !player.HasBuff("Mana Potion"))
+                CastPotion(PotionType.Mana);
+        }
+
+        private static void CastPotion(PotionType type)
+        {
+            try
+            {
+                player.InventoryItems.First(
+                    item =>
+                        item.Id == (type == PotionType.Health ? (ItemId) 2003 : (ItemId) 2004) ||
+                        (item.Id == (ItemId) 2010) || (item.Id == (ItemId) 2041 && item.Charges > 0)).UseItem();
+            }
+            catch (Exception)
+            {
+                
+            }
         }
 
         public void levelUp(Obj_AI_Base sender, CustomEvents.Unit.OnLevelUpEventArgs args)

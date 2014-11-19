@@ -22,7 +22,7 @@ namespace HypaJungle
             DoSomeHealing
         }
 
-        public static List<String> supportedChamps = new List<string>{"MasterYi","Udyr","Warwick"}; 
+        public static List<String> supportedChamps = new List<string> { "MasterYi", "Udyr", "Warwick", "Shyvana", "LeeSin" }; 
 
 
         public static Obj_AI_Hero player = ObjectManager.Player;
@@ -52,6 +52,14 @@ namespace HypaJungle
                     jungler = new Udyr();
                     Game.PrintChat("Udyr loaded");
                     break;
+                case "shyvana":
+                    jungler = new Shyvana();
+                    Game.PrintChat("Shyvana loaded");
+                    break;
+                case "leesin":
+                    jungler = new LeeSin();
+                    Game.PrintChat("LeeSin loaded");
+                    break;
             }
 
             Game.PrintChat("Other junglers coming soon!");
@@ -69,6 +77,8 @@ namespace HypaJungle
 
             if (jcState == JungleCleanState.RunningToCamp)
             {
+                if(focusedCamp.State != JungleCampState.Dead)
+                    jungler.castWhenNear(focusedCamp);
                 jungler.checkItems();
                 logicRunToCamp();
             }
@@ -100,6 +110,12 @@ namespace HypaJungle
 
             if (jcState == JungleCleanState.GoingToShop)
             {
+                if (jungler.inSpwan() && player.IsChanneling)
+                {
+                    Vector3 stopRecPos = new Vector3(6, 30, 2);
+                    player.IssueOrder(GameObjectOrder.MoveTo, player.Position + stopRecPos);
+                }
+
                 if (jungler.nextItem != null && player.GoldCurrent >= jungler.nextItem.goldReach )
                 {
                     Console.WriteLine(player.GoldCurrent + "   " + jungler.nextItem.goldReach);
@@ -108,8 +124,10 @@ namespace HypaJungle
                 }
                 else
                 {
+                    
+
                     Console.WriteLine("fuk up shop");
-                    if (jungler.inSpwan() && player.Health > player.MaxHealth * 0.9f && player.Mana > player.MaxMana * 0.9f)
+                    if (jungler.inSpwan() && player.Health > player.MaxHealth * 0.9f && (!jungler.gotMana || player.Mana > player.MaxMana * 0.9f))
                         jcState = JungleCleanState.SearchingBestCamp;
                     if(!player.IsChanneling && !jungler.inSpwan())
                         jcState = JungleCleanState.SearchingBestCamp;
@@ -171,36 +189,10 @@ namespace HypaJungle
             if (campMinions.Count() ==0)
             {
                 getJungleMinionsManualy();
-                /*if (focusedCamp.Minions.Where(min => min.Unit != null && !min.Dead).Count() == 0)
-                {
-                    if (NavMesh.LineOfSightTest(focusedCamp.Position, focusedCamp.Position))
-                    {
-                        Console.WriteLine("disable camp");
-                        HypaJungle.jTimer.disableCamp(focusedCamp.campId);
-                        //jcState = JungleCleanState.SearchingBestCamp;
-                        // allAlive = false;
-                    }
-                   // jcState = JungleCleanState.SearchingBestCamp;
-
-                  /*  if (focusedCamp.State == JungleCampState.Alive)
-                    {
-                        Console.WriteLine("get new camp!!");
-                        foreach (var min in focusedCamp.Minions)
-                        {
-                            min.Unit = null;
-                            min.Dead = true;
-                        }
-                        focusedCamp.ClearTick = Game.Time;
-                        focusedCamp.State = JungleCampState.Dead;
-
-                        jcState = JungleCleanState.SearchingBestCamp;
-                    }
-
-                }*/
             }
             else//do all attacking
             {
-                jungler.attackMinion((Obj_AI_Minion)campMinions.FirstOrDefault().Unit);
+                jungler.startAttack((Obj_AI_Minion)campMinions.FirstOrDefault().Unit);
             }
 
         }
