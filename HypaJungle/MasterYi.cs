@@ -97,8 +97,14 @@ namespace HypaJungle
                 },
                 new ItemToShop()
                 {
-                    goldReach = 999999,
-                    itemsMustHave = new List<int>{3142},
+                    goldReach = 1100,
+                    itemsMustHave = new List<int>{3086},
+                    itemIds = new List<int>{}
+                },
+                new ItemToShop()
+                {
+                    goldReach = 1400,
+                    itemsMustHave = new List<int>{3087},
                     itemIds = new List<int>{}
                 },
             };
