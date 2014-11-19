@@ -22,12 +22,14 @@ namespace HypaJungle
             DoSomeHealing
         }
 
-        public static List<String> supportedChamps = new List<string> { "MasterYi", "Udyr", "Warwick", "Shyvana", "LeeSin" }; 
+        public static List<String> supportedChamps = new List<string> { "MasterYi", "Udyr", "Warwick", "Shyvana", "LeeSin","Amumu" }; 
 
 
         public static Obj_AI_Hero player = ObjectManager.Player;
 
         public static JungleCamp focusedCamp;
+
+        public static bool recalCasted = false;
 
 
         public static JungleCamp skipCamp;
@@ -59,6 +61,10 @@ namespace HypaJungle
                 case "leesin":
                     jungler = new LeeSin();
                     Game.PrintChat("LeeSin loaded");
+                    break;
+                case "amumu":
+                    jungler = new Amumu();
+                    Game.PrintChat("Amumu loaded");
                     break;
             }
 
@@ -119,8 +125,11 @@ namespace HypaJungle
                 if (jungler.nextItem != null && player.GoldCurrent >= jungler.nextItem.goldReach )
                 {
                     Console.WriteLine(player.GoldCurrent + "   " + jungler.nextItem.goldReach);
-                    if (jungler.recall.IsReady() && !player.IsChanneling && !jungler.inSpwan())
+                    if (jungler.recall.IsReady() && !player.IsChanneling && !jungler.inSpwan() && !recalCasted)
+                    {
                         jungler.recall.Cast();
+                        recalCasted = true;
+                    }
                 }
                 else
                 {
@@ -133,6 +142,10 @@ namespace HypaJungle
                         jcState = JungleCleanState.SearchingBestCamp;
 
                 }
+            }
+            else
+            {
+                recalCasted = false;
             }
 
             if (jcState == JungleCleanState.GoingToShop && jungler.inSpwan())

@@ -42,38 +42,26 @@ namespace HypaJungle
                 },
                 new ItemToShop()
                 {
-                    goldReach = 485,
+                    goldReach = 470,
                     itemsMustHave = new List<int>{1039},
-                    itemIds = new List<int>{3106,2003}
+                    itemIds = new List<int>{1080,2003,2003}
                 },
                 new ItemToShop()
                 {
-                    goldReach = 775,
-                    itemsMustHave = new List<int>{3106},
-                    itemIds = new List<int>{1042,1001}
+                    goldReach = 685,
+                    itemsMustHave = new List<int>{1080},
+                    itemIds = new List<int>{1001,1036}
                 },
                 new ItemToShop()
                 {
-                    goldReach = 575,
-                    itemsMustHave = new List<int>{1042,1001},
-                    itemIds = new List<int>{3154}
-                },
-                new ItemToShop()
-                {
-                    goldReach = 800,
-                    itemsMustHave = new List<int>{3154},
-                    itemIds = new List<int>{1053}
-                },
-                new ItemToShop()
-                {
-                    goldReach = 600,
-                    itemsMustHave = new List<int>{1053},
-                    itemIds = new List<int>{3144}
+                    goldReach = 940,
+                    itemsMustHave = new List<int>{1001,1036},
+                    itemIds = new List<int>{3209}
                 },
                 new ItemToShop()
                 {
                     goldReach = 9999999,
-                    itemsMustHave = new List<int>{3144},
+                    itemsMustHave = new List<int>{3209},
                     itemIds = new List<int>{}
                 }
             };
@@ -110,7 +98,7 @@ namespace HypaJungle
         {
             if (W.IsReady())
             {
-                if (W.Instance.Name == "BlindMonkQOne" && BuffCount() == 0)
+                if (W.Instance.Name == "BlindMonkWOne" && BuffCount() == 0)
                     W.Cast(player);
                 else if (BuffCount() == 0)
                     W.Cast();
@@ -120,9 +108,9 @@ namespace HypaJungle
 
         public override void UseE(Obj_AI_Minion minion)
         {
-            if (E.IsReady())
+            if (E.IsReady() && minion.Distance(player) < 300)
             {
-                if (E.Instance.Name == "BlindMonkEOne" && BuffCount() == 0 && minion.Distance(player)<200)
+                if (E.Instance.Name == "BlindMonkEOne" && BuffCount() == 0)
                     E.Cast();
                 else if (BuffCount() == 0)      
                     E.Cast();

@@ -418,6 +418,14 @@ namespace HypaJungle
                     camp.ClearTick = Game.Time;
                     camp.State = JungleCampState.Dead;
                 }
+                if (JungleClearer.focusedCamp != null)
+                {
+                    if (camp.campId == JungleClearer.focusedCamp.campId)
+                    {
+
+                        JungleClearer.jcState = JungleClearer.JungleCleanState.GoingToShop;
+                    }
+                }
             }
         }
 
